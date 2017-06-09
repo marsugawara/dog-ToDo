@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+
+<head>
+  <title>ToDoリスト</title>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <link rel="stylesheet" type="text/css" href="a-box.css" />
+  <link rel="stylesheet" type="text/css" href="b-box.css" />
+  <link rel="stylesheet" type="text/css" href="c-box.css" />
+  <link rel="stylesheet" type="text/css" href="d-box.css" />
+</head>
+
+<body>
+<div id = "site-box">
+
+    <div id = "a-box">
+        <h2>A サイトタイトル</h2>
+    </div>
+
+    <div id = "b-box">
+        <h3 align="center">昨日</h3><hr></hr>
+        <h2 align="center">今日</h2><hr></hr>
+        <h3 align="center">明日</h3><hr></hr>
+        <h3 align="center">カレンダー</h3>
+        <div align="center">
+        <img src="img/kare06.png" alt="写真" width="160" height="120"></img>
+        </div>
+        
+    </div>
+
+    <div id = "c-box">
+
+        <div id = "cc1-box"><!-- 左の箱 -->
+          <div align="center">
+            <h2>ろくた</h2>
+            <img src="img/dog.jpg" alt="写真" width="100" height="100"></img>
+            
+            <!-- チェックボックス --><!-- https://www.m-field.biz/archives/3200 -->
+            <div class="checkbox02">
+                <!-- ArrayListの中身呼ぶ -->
+                <table>
+                    <tr th:each="rokutagohan : ${rokutaGohans}">
+                    <td><input type="checkbox" /></td>
+                    <td th:text="${rokutagohan.title}"></td>
+                    <td th:text="${rokutagohan.chtime}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 項目隠しているところ -->
+              <div class="btm">
+                       <form method="get" th:action="@{/nanaplus}">
+                           <input type="text" name="item" placeholder="項目名" />
+                           <input type="submit" value="追加" />
+                       </form>
+                       <form method="get" th:action="@{/test}">
+                     </form>>
+                    </div>
+
+            
+          </div>
+        </div>
+
+        <div id = "cc2-box"><!-- 右の箱 -->
+          <div align="center">
+            <h2>ななこ</h2>
+            <img src="img/dog.jpg" alt="写真" width="100" height="100"></img>
+            <!-- チェックボックス -->
+            <div class="checkbox02">
+	            <!-- ArrayListの中身呼ぶ -->
+	            <table>
+	                <tr th:each="nanakogohan : ${nanakogohans}">
+	                <td><input type="checkbox" /></td>
+	                <td th:text="${nanakogohan.title}"></td>
+	                <td th:text="${nanakogohan.chtime}"></td>
+	                </tr>
+	            </table>
+            </div>
+
+             <!-- 項目隠しているところ -->
+
+	                <div class="btm">
+	                   <form method="get" th:action="@{/nanaplus}">
+		                   <input type="text" name="item" placeholder="項目名" />
+	                       <input type="submit" value="追加" />
+                       </form>
+                       <form method="get" th:action="@{/test}">
+                     </form>>
+	                </div>
+
+          </div>
+        </div>
+    </div>
+
+
+    <div id = "d-box">
+        <div class="padding">
+            <p>「<span th:text="${name}">今日も元気です</span>」</p>
+	        <form method="get" th:action="@{/h2}">
+		        <input type="text" name="name" placeholder="今日も元気です" />
+		        <input type="submit" />
+	        </form>
+        </div>
+    </div>
+
+                     <input type="submit" value="test "/>
+
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+#d-box{ 
+    float: right;
+    width: 550px;
+    height:100px;
+    border : 1px solid #c71585;
+    background-color: #FFFF99;
+}
+
+.padding{
+    padding: 20px 50px;
+}
