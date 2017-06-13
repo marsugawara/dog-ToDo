@@ -56,10 +56,11 @@ public class MainController {
         return "indent";
     }
 
-    @GetMapping("/form") // コメント送信ボタン
+    @GetMapping("/form") // コメント書込ボタン
     public String sample(String comm, Model model) {
         addComment(LocalDate.now(), comm);
         printList(model);
+        printComment(model);
         return "indent";
     }
 
@@ -92,11 +93,15 @@ public class MainController {
         model.addAttribute("rokutaGohans", rokuta); // 表示するために渡してる
         model.addAttribute("nanakogohans", nanako); // 表示するために渡してる
     }
-    
-/*    public void printComment(Model model){
-        どうしたらいいのかわからないよ
+    //コメント表示
+    public void printComment(Model model){
+
+        List<Map<String, Object>>text_comment = jdbc.queryForList(
+               "SELECT text FROM comment WHERE day=day");
+        System.out.println(text_comment);
+        model.addAttribute("comm",text_comment );
     }
-*/
+
     
     // 基本項目の追加
     public void addDay(int dogType, String title, Date day) {
@@ -119,7 +124,7 @@ public class MainController {
                 k = 0;
             }
         }
-        
+
         switch(k){
             case 0:
                 jdbc.update("INSERT INTO comment (text, day)"
@@ -132,22 +137,6 @@ public class MainController {
                         + "WHERE day = ?",text, LocalDate.now());
                 System.out.println("1"+ LocalDate.now());
                 break;
-            
         }
-        
-       // System.out.println(LocalDateTime.now());
-      /*  
-        for (int i = 0; i < comm_daySQL.size(); i++) {
-            if ((comm_daySQL.get(i)).get("day") == null) {
-                jdbc.update("INSERT INTO comment (text, day)" 
-                        + " VALUES (?, ?)",text, day);
-            } else {
-                jdbc.update("UPDATE comment" 
-                        + " SET text = ?"
-                        + "WHERE day = ?",text,day);
-            }
-        }*/
     }
-    
-
 }
