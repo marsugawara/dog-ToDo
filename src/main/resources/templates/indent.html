@@ -49,8 +49,6 @@
                      <input type="text" name="item" placeholder="項目名" />
                      <input type="submit" value="追加" />
                  </form>
-                 <form method="get" th:action="@{/test}">
-                 </form>>
               </div>
           </div>
         </div>
@@ -74,8 +72,6 @@
                      <input type="text" name="item" placeholder="項目名" />
                      <input type="submit" value="追加" />
                   </form>
-                  <form method="get" th:action="@{/test}">
-                  </form>>
                </div><!-- btm -->
          </div><!-- center -->
        </div><!-- cc2-box -->
@@ -84,10 +80,10 @@
 
     <div id = "d-box">
         <div class="padding">
-            <p>「<span th:text="${name}">今日も元気です</span>」</p>
+            <p>「<span th:text="${comm}">今日も元気です</span>」</p>
 	        <form method="get" th:action="@{/form}">
-		        <input type="text" name="name" placeholder="今日も元気です" />
-		        <input type="submit" />
+		        <input type="text" name="comm" placeholder="今日も元気です" />
+		        <input type="submit" value="書込"/>
 	        </form>
         </div>
     </div>

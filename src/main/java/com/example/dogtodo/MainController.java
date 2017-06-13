@@ -1,6 +1,8 @@
 package com.example.dogtodo;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -55,8 +57,8 @@ public class MainController {
     }
 
     @GetMapping("/form") // コメント送信ボタン
-    public String sample(String name, Model model) {
-        model.addAttribute("name", name);
+    public String sample(String comm, Model model) {
+        addComment(LocalDate.now(), comm);
         printList(model);
         return "indent";
     }
@@ -98,16 +100,54 @@ public class MainController {
     
     // 基本項目の追加
     public void addDay(int dogType, String title, Date day) {
-        jdbc.update("INSERT INTO schedule (dogtype, title, day) VALUES (" + dogType + ", '" + title + "', '"
-                + new SimpleDateFormat("yyyy/MM/dd").format(day) + "')");
+        jdbc.update("INSERT INTO schedule (dogtype, title, day)"
+                + " VALUES(?, ?, ?)",dogType,title,day);
     }
 
-/*  書き方あってるのか？
+
     // コメントの追加
-    public void addComm(Date day, String Comment){
-        jdbc.update("INSERT INTO schedule (text, day) VALUES (" + text + "', '"
-                + new SimpleDateFormat("yyyy/MM/dd").format(day) + "')");
+    public void addComment(LocalDate day, String text){
+        List<Map<String, Object>> comm_daySQL = jdbc.queryForList("SELECT day FROM comment");
+        
+        int k = 0;
+        for (int i = 0; i < comm_daySQL.size(); i++){
+            LocalDate date = LocalDate.parse((comm_daySQL.get(i)).get("day").toString());
+            if (date.equals(day)) {
+                k = 1;
+                break;
+            }else{
+                k = 0;
+            }
+        }
+        
+        switch(k){
+            case 0:
+                jdbc.update("INSERT INTO comment (text, day)"
+                        + " VALUES (?, ?)",text, LocalDate.now());
+               // System.out.println("0"+ LocalDate.now());
+                break;
+            case 1:
+                jdbc.update("UPDATE comment" 
+                        + " SET text = ?"
+                        + "WHERE day = ?",text, LocalDate.now());
+                System.out.println("1"+ LocalDate.now());
+                break;
+            
+        }
+        
+       // System.out.println(LocalDateTime.now());
+      /*  
+        for (int i = 0; i < comm_daySQL.size(); i++) {
+            if ((comm_daySQL.get(i)).get("day") == null) {
+                jdbc.update("INSERT INTO comment (text, day)" 
+                        + " VALUES (?, ?)",text, day);
+            } else {
+                jdbc.update("UPDATE comment" 
+                        + " SET text = ?"
+                        + "WHERE day = ?",text,day);
+            }
+        }*/
     }
-*/    
+    
 
 }
