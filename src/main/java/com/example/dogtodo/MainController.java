@@ -39,6 +39,7 @@ public class MainController {
     @GetMapping("/indent") // 全体の初期ページ
     public String hello(Goods goods, Model model) {
         printList(model);
+        printComment(model);
         return "indent";
     }
 
@@ -46,6 +47,7 @@ public class MainController {
     public String rokuplus(String item, Model model) {
         addDay(0, item, new Date());
         printList(model);
+      //  printComment(model);
         return "indent";
     }
 
@@ -53,6 +55,7 @@ public class MainController {
     public String nanaplus(String item, Model model) {
         addDay(1, item, new Date());
         printList(model);
+      //  printComment(model);
         return "indent";
     }
 
@@ -94,14 +97,19 @@ public class MainController {
         model.addAttribute("nanakogohans", nanako); // 表示するために渡してる
     }
     //コメント表示
+    
     public void printComment(Model model){
-
+        String textcomm = "";
+        
         List<Map<String, Object>>text_comment = jdbc.queryForList(
                "SELECT text FROM comment WHERE day=day");
-        System.out.println(text_comment);
-        model.addAttribute("comm",text_comment );
+        if(text_comment.size() != 0){
+            textcomm = (text_comment.get(0)).get("text").toString();
+        }
+        model.addAttribute("comm",textcomm);
+        
     }
-
+    
     
     // 基本項目の追加
     public void addDay(int dogType, String title, Date day) {
@@ -109,6 +117,12 @@ public class MainController {
                 + " VALUES(?, ?, ?)",dogType,title,day);
     }
 
+    @GetMapping("/test")
+    public String selectCheck(Model model){
+        System.out.println("check");
+        printList(model);
+        return "indent";
+    }
 
     // コメントの追加
     public void addComment(LocalDate day, String text){
