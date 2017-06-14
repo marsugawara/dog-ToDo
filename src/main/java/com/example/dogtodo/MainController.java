@@ -1,10 +1,9 @@
 package com.example.dogtodo;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,22 +15,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import lombok.Value;
-
 @Controller
 public class MainController {
 
     @Autowired
     private JdbcTemplate jdbc;
 
-    /*
-     * @GetMapping("/test") public String test(){
-     * System.out.println(jdbc.queryForList(
-     * "SELECT dogtype,title FROM schedule WHERE dogtype=0"));
-     * System.out.println(jdbc.queryForList(
-     * "SELECT dogtype,title FROM schedule WHERE dogtype=1 AND day IS null"));
-     * return "indent"; }
-     */
+
 
     // 使うやつ
     private List<Goods> rokuta;
@@ -40,60 +30,65 @@ public class MainController {
     // 処理の中身
     @GetMapping("/indent") // 全体の初期ページ
     public String hello(LocalDate date, Goods goods, Model model) {
-        if(date == null){
-            date = LocalDate.now();
+        if (date == null) {
+            model.addAttribute("rokutaGohan", getGoods(0, LocalDate.now()));
+            model.addAttribute("nanakogohan", getGoods(1, LocalDate.now()));
+        } else {
+            model.addAttribute("rokutaGohan", getGoods(0, date));
+            model.addAttribute("nanakogohan", getGoods(1, date));
         }
-        
-        printList(model);
-        printComment(model);
-        
+
+       // printComment(model);
+
         model.addAttribute("currentDate", date);
-        
+
         return "indent";
     }
-    
+
     @PostMapping("/test")
     public String test(LocalDate date, RedirectAttributes attr) {
-        // 処理
+
+        System.out.println(date);
 
         attr.addFlashAttribute("date", date);
 
         return "redirect:/indent";
     }
 
-    @GetMapping("/rokuplus") // ろくた追加ボタン
-    public String rokuplus(String item, Model model) {
+    @PostMapping("/rokuplus") // ろくた追加ボタン
+    public String rokuplus(String item, Model model, RedirectAttributes attr) {
         addDay(0, item, new Date());
         printList(model);
       //  printComment(model);
-        return "indent";
+        return "redirect:/indent";
     }
 
-    @GetMapping("/nanaplus") // ななこ追加ボタン
-    public String nanaplus(String item, Model model) {
+    @PostMapping("/nanaplus") // ななこ追加ボタン
+    public String nanaplus(String item, Model model, RedirectAttributes attr) {
         addDay(1, item, new Date());
         printList(model);
       //  printComment(model);
-        return "indent";
+        return "redirect:/indent";
     }
 
-    @GetMapping("/form") // コメント書込ボタン
-    public String sample(String comm, Model model) {
+    @PostMapping("/form") // コメント書込ボタン
+    public String sample(String comm, Model model, RedirectAttributes attr) {
         addComment(LocalDate.now(), comm);
         printList(model);
         printComment(model);
-        return "indent";
+        return "redirect:/indent";
     }
     // ななこチェック後
+    /*
     @GetMapping("/na_aftercheck")
     public String selectCheck(Model model){
         addChecktime(LocalDateTime.now(),1);
         printList(model);
         return "indent";
-    }
+    }*/
 
     // メソッド作成
-    public void printList(String dogType, Model model) { // チェックボックスのメソッド
+    public void printList(Model model) { // チェックボックスのメソッド
         rokuta = new ArrayList<Goods>(); // rokutaのリスト作成
         List<Map<String, Object>> rokutaSQL = jdbc.queryForList("SELECT title,checktime FROM schedule WHERE dogtype=0");
         for (int i = 0; i < rokutaSQL.size(); i++) {
@@ -106,41 +101,47 @@ public class MainController {
             rokuta.add(new Goods((rokutaSQL.get(i)).get("title").toString(), checktime));
         }
 
-        nanako = new ArrayList<Goods>(); // nanakoのリスト作成
-        List<Map<String, Object>> nanakoSQL = jdbc.queryForList("SELECT title,checktime FROM schedule WHERE dogtype=1");
-        for (int i = 0; i < nanakoSQL.size(); i++) {
+        model.addAttribute("rokutaGohans", rokuta); // 表示するために渡してる
+    }
+
+    private List<Goods> getGoods(int dogType, LocalDate date) {
+        List<Map<String, Object>> schedules = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ?", dogType, date);
+        List<Goods> goods = new ArrayList<>();
+
+        for (Map<String, Object> schedule : schedules) {
             String checktime;
-            if ((nanakoSQL.get(i)).get("checktime") == null) {
+            if ((schedule).get("checktime") == null) {
                 checktime = "";
             } else {
-                checktime = (nanakoSQL.get(i)).get("checktime").toString();
+                checktime = (schedule).get("checktime").toString();
             }
-            nanako.add(new Goods((nanakoSQL.get(i)).get("title").toString(), checktime));
+            goods.add(new Goods((schedule).get("title").toString(), checktime));
         }
 
-        model.addAttribute("rokutaGohans", rokuta); // 表示するために渡してる
-        model.addAttribute("nanakogohans", nanako); // 表示するために渡してる
+        return goods;
     }
+
     //コメント表示
     public void printComment(Model model){
         String textcomm = "";
         
         List<Map<String, Object>>text_comment = jdbc.queryForList(
-               "SELECT text FROM comment WHERE day=day");
+               "SELECT text FROM comment WHERE day=date");
         if(text_comment.size() != 0){
             textcomm = (text_comment.get(0)).get("text").toString();
         }
         model.addAttribute("comm",textcomm);
         
     }
-    
-    
+
+
     // 基本項目の追加
-    public void addDay(int dogType, String title, Date day) {
+    public void addDay(int dogtype, String title, Date day) {
         jdbc.update("INSERT INTO schedule (dogtype, title, day)"
-                + " VALUES(?, ?, ?)",dogType,title,day);
+                + " VALUES(?, ?, ?)",dogtype,title,day);
     }
     // チックされた時間の追加
+    /*
     public void addChecktime(LocalDateTime day,int dogtype){
         
         
@@ -151,7 +152,7 @@ public class MainController {
                 + "WHERE dogtype=?"
                 + "AND day=day"
                 + "AND title=title", LocalDateTime.now(),dogtype);
-    }
+    }*/
 
     // コメントの追加
     public void addComment(LocalDate day, String text){

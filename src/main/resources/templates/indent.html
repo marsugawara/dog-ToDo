@@ -50,6 +50,7 @@
               <div class="btm">
                  <form method="get" th:action="@{/rokuplus}">
                      <input type="text" name="item" placeholder="項目名" />
+                 <!--    <input type="hidden" name="dogtype" value="0">-->
                      <input type="submit" value="追加" />
                  </form>
               </div>
@@ -75,6 +76,7 @@
                <div class="btm">
                   <form method="get" th:action="@{/nanaplus}">
                      <input type="text" name="item" placeholder="項目名" />
+                      <!--    <input type="hidden" name="dogtype" value="1">-->
                      <input type="submit" value="追加" />
                   </form>
                </div><!-- btm -->
@@ -86,7 +88,7 @@
     <div id = "d-box">
         <div class="padding">
             <p>「<span th:text="${comm}">今日も元気です</span>」</p>
-	        <form method="get" th:action="@{/form}">
+	        <form method="get" th:action="@{/test}">
 		        <input type="text" name="comm" placeholder="今日も元気です" />
 		        <input type="submit" value="書込"/>
 	        </form>
