@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import lombok.Value;
 
@@ -37,10 +39,26 @@ public class MainController {
 
     // 処理の中身
     @GetMapping("/indent") // 全体の初期ページ
-    public String hello(Goods goods, Model model) {
+    public String hello(LocalDate date, Goods goods, Model model) {
+        if(date == null){
+            date = LocalDate.now();
+        }
+        
         printList(model);
         printComment(model);
+        
+        model.addAttribute("currentDate", date);
+        
         return "indent";
+    }
+    
+    @PostMapping("/test")
+    public String test(LocalDate date, RedirectAttributes attr) {
+        // 処理
+
+        attr.addFlashAttribute("date", date);
+
+        return "redirect:/indent";
     }
 
     @GetMapping("/rokuplus") // ろくた追加ボタン
@@ -66,9 +84,16 @@ public class MainController {
         printComment(model);
         return "indent";
     }
+    // ななこチェック後
+    @GetMapping("/na_aftercheck")
+    public String selectCheck(Model model){
+        addChecktime(LocalDateTime.now(),1);
+        printList(model);
+        return "indent";
+    }
 
     // メソッド作成
-    public void printList(Model model) { // チェックボックスのメソッド
+    public void printList(String dogType, Model model) { // チェックボックスのメソッド
         rokuta = new ArrayList<Goods>(); // rokutaのリスト作成
         List<Map<String, Object>> rokutaSQL = jdbc.queryForList("SELECT title,checktime FROM schedule WHERE dogtype=0");
         for (int i = 0; i < rokutaSQL.size(); i++) {
@@ -97,7 +122,6 @@ public class MainController {
         model.addAttribute("nanakogohans", nanako); // 表示するために渡してる
     }
     //コメント表示
-    
     public void printComment(Model model){
         String textcomm = "";
         
@@ -116,12 +140,17 @@ public class MainController {
         jdbc.update("INSERT INTO schedule (dogtype, title, day)"
                 + " VALUES(?, ?, ?)",dogType,title,day);
     }
-
-    @GetMapping("/test")
-    public String selectCheck(Model model){
-        System.out.println("check");
-        printList(model);
-        return "indent";
+    // チックされた時間の追加
+    public void addChecktime(LocalDateTime day,int dogtype){
+        
+        
+        
+        
+        jdbc.update("UPDATE schedule" 
+                + " SET checktime = ?"
+                + "WHERE dogtype=?"
+                + "AND day=day"
+                + "AND title=title", LocalDateTime.now(),dogtype);
     }
 
     // コメントの追加
@@ -138,7 +167,6 @@ public class MainController {
                 k = 0;
             }
         }
-
         switch(k){
             case 0:
                 jdbc.update("INSERT INTO comment (text, day)"
@@ -153,4 +181,8 @@ public class MainController {
                 break;
         }
     }
+
+
+
+
 }
