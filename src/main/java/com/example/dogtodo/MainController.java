@@ -29,14 +29,14 @@ public class MainController {
 
     // 処理の中身
     @GetMapping("/indent") // 全体の初期ページ
-    public String hello(LocalDate date, Goods goods, Model model) {
-        if (date == null) {
-            model.addAttribute("rokutaGohan", getGoods(0, LocalDate.now()));
-            model.addAttribute("nanakogohan", getGoods(1, LocalDate.now()));
-        } else {
-            model.addAttribute("rokutaGohan", getGoods(0, date));
-            model.addAttribute("nanakogohan", getGoods(1, date));
+    public String hello(String date, Goods goods, Model model) {
+        LocalDate localDate = LocalDate.now();
+        if (date != null ){ //日付指定（localDateにString型に直した日付を入れなおす）
+            
         }
+
+        model.addAttribute("rokutaGohan", getGoods(0, localDate));
+        model.addAttribute("nanakogohan", getGoods(1, localDate));
 
        // printComment(model);
 
@@ -120,6 +120,21 @@ public class MainController {
 
         return goods;
     }
+
+    //newコメント表示
+    /*
+    private getComment(){
+        
+        List<Map<String, Object>>text_comment = jdbc.queryForList(
+               "SELECT text FROM comment WHERE day=date");
+        String textcomm = "";
+        if(text_comment.size() != 0){
+            textcomm = (text_comment.get(0)).get("text").toString();
+        }
+        model.addAttribute("comm",textcomm);
+        
+    }
+    */
 
     //コメント表示
     public void printComment(Model model){
