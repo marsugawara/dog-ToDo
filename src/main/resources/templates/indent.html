@@ -24,7 +24,7 @@
         <h3 align="center">明日</h3><hr></hr>
         <h3 align="center">カレンダー</h3>
         <div align="center">
-        <form method="get" th:action="@{/form}">
+        <form method="post" th:action="@{/form8}">
             <input type="date" name="num01"/>
             <input type="submit" value="移動"/>
         </form>
@@ -48,9 +48,10 @@
                 </table>
             <!-- 追加項目 -->
               <div class="btm">
-                 <form method="get" th:action="@{/rokuplus}">
+                 <form method="post" th:action="@{/rokuplus}">
+                     <input type="hidden" name="catchDate" th:value="${date}" />
                      <input type="text" name="item" placeholder="項目名" />
-                 <!--    <input type="hidden" name="dogtype" value="0">-->
+                     <input type="hidden" name="dogtype" value="0"/>
                      <input type="submit" value="追加" />
                  </form>
               </div>
@@ -74,9 +75,9 @@
 	            </form>
              <!-- 追加項目 -->
                <div class="btm">
-                  <form method="get" th:action="@{/nanaplus}">
+                  <form method="post" th:action="@{/nanaplus}">
                      <input type="text" name="item" placeholder="項目名" />
-                      <!--    <input type="hidden" name="dogtype" value="1">-->
+                     <input type="hidden" name="dogtype" value="1"/>
                      <input type="submit" value="追加" />
                   </form>
                </div><!-- btm -->
@@ -88,7 +89,7 @@
     <div id = "d-box">
         <div class="padding">
             <p>「<span th:text="${comm}">今日も元気です</span>」</p>
-	        <form method="get" th:action="@{/test1}">
+	        <form method="post" th:action="@{/form}">
 		        <input type="text" name="comm" placeholder="今日も元気です" />
 		        <input type="submit" value="書込"/>
 	        </form>

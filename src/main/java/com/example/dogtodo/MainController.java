@@ -2,8 +2,6 @@ package com.example.dogtodo;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -36,13 +35,31 @@ public class MainController {
     public String hello(String date, Goods goods, Model model) {
         LocalDate localDate = LocalDate.now();
         if (date != null ){ //日付指定（localDateにString型に直した日付を入れなおす）
-            date = localDate.toString();
+
         }
 
-        model.addAttribute("rokutaGohan", getGoods(0, localDate));
-        model.addAttribute("nanakogohan", getGoods(1, localDate));
+        model.addAttribute("rokutaGohans", getGoods(0, localDate));
+        model.addAttribute("nanakogohans", getGoods(1, localDate));
         printComment(model);
+        model.addAttribute("currentDate", date);
 
+        return "indent";
+    }
+    
+    @GetMapping("/indent:{date}")
+    public String helloworld(@PathVariable("date") String date, Model model){
+        System.out.println(date);
+        if (date.equals(null) && date.equals("")){ //日付指定（localDateにString型に直した日付を入れなおす）
+            model.addAttribute("rokutaGohans", getGoods(0, LocalDate.parse(date)));
+            model.addAttribute("nanakogohans", getGoods(1, LocalDate.parse(date)));
+        } else{
+            model.addAttribute("rokutaGohans", getGoods(0, LocalDate.now()));
+            model.addAttribute("nanakogohans", getGoods(1, LocalDate.now()));
+        }
+
+        //model.addAttribute("rokutaGohans", getGoods(0, LocalDate.parse(date)));
+        //model.addAttribute("nanakogohans", getGoods(1, LocalDate.parse(date)));
+        printComment(model);
         model.addAttribute("currentDate", date);
 
         return "indent";
@@ -50,48 +67,61 @@ public class MainController {
 
     @PostMapping("/test1")
     public String test(LocalDate date, RedirectAttributes attr) {
-
         System.out.println(date);
-
         attr.addFlashAttribute("date", date);
-
+        
         return "redirect:/indent";
     }
 
     @PostMapping("/rokuplus") // ろくた追加ボタン
-    public String rokuplus(String item, Model model, RedirectAttributes attr) {
-        addDay(0, item, new Date());
-      //  printComment(model);
-        return "redirect:/indent";
+    public String rokuplus(String item, String catchDate, RedirectAttributes attr) {
+        //addDay(0, item, LocalDate.now());
+        LocalDate day = LocalDate.now();
+        if(catchDate.equals(null) == false && catchDate.equals("") == false){
+            day = LocalDate.parse(catchDate);
+        }
+        addDay(0, item, day);
+        attr.addFlashAttribute(item);
+        
+        return "redirect:/indent:" + day;
     }
 
     @PostMapping("/nanaplus") // ななこ追加ボタン
-    public String nanaplus(String item, Model model, RedirectAttributes attr) {
-        addDay(1, item, new Date());
-      //  printComment(model);
+    public String nanaplus(String item, RedirectAttributes attr) {
+        addDay(1, item, LocalDate.now());
+        attr.addFlashAttribute(item);
+        
         return "redirect:/indent";
     }
 
     @PostMapping("/form") // コメント書込ボタン
-    public String sample(String comm, Model model, RedirectAttributes attr) {
+    public String sample(String comm, RedirectAttributes attr) {
         addComment(LocalDate.now(), comm);
-        printComment(model);
+        attr.addFlashAttribute(comm);
+        
         return "redirect:/indent";
     }
-    // ななこチェック後
-    /*
-    @GetMapping("/na_aftercheck")
-    public String selectCheck(Model model){
-        addChecktime(LocalDateTime.now(),1);
-        printList(model);
-        return "indent";
-    }*/
+    
+    @PostMapping("/form8")
+    public String calendarSelect(String num01, RedirectAttributes attr){
+        LocalDate day = LocalDate.parse(num01);
+        
+        attr.addFlashAttribute("date", day);
+        return "redirect:/indent:" + day;
+    }
 
     // メソッド作成
     private List<Goods> getGoods(int dogType, LocalDate date) {
         List<Map<String, Object>> schedules = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ?", dogType, date);
-        List<Goods> goods = new ArrayList<>();
+        //List<Map<String, Object>> schedules = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND (day = ? or day IS NULL)", dogType, date);
+        List<Goods> goods = new ArrayList<Goods>();
 
+        /*for (Map<String, Object> schedule : schedules) {
+            if(schedule.get("title").toString().equals("朝ごはん") && schedule.get("checktime").toString().equals(null) == false){
+                schedules.remove(0);
+            }
+            
+        }*/
         for (Map<String, Object> schedule : schedules) {
             String checktime;
             if ((schedule).get("checktime") == null) {
@@ -120,23 +150,10 @@ public class MainController {
 
 
     // 基本項目の追加
-    public void addDay(int dogtype, String title, Date day) {
+    public void addDay(int dogtype, String title, LocalDate day) {
         jdbc.update("INSERT INTO schedule (dogtype, title, day)"
                 + " VALUES(?, ?, ?)",dogtype,title,day);
     }
-    // チックされた時間の追加
-    /*
-    public void addChecktime(LocalDateTime day,int dogtype){
-        
-        
-        
-        
-        jdbc.update("UPDATE schedule" 
-                + " SET checktime = ?"
-                + "WHERE dogtype=?"
-                + "AND day=day"
-                + "AND title=title", LocalDateTime.now(),dogtype);
-    }*/
 
     // コメントの追加
     public void addComment(LocalDate day, String text){
@@ -167,7 +184,28 @@ public class MainController {
         }
     }
 
-
+    // ななこチェック後
+    /*
+    @GetMapping("/na_aftercheck")
+    public String selectCheck(Model model){
+        addChecktime(LocalDateTime.now(),1);
+        printList(model);
+        return "indent";
+    }*/
+    
+    // チックされた時間の追加
+    /*
+    public void addChecktime(LocalDateTime day,int dogtype){
+        
+        
+        
+        
+        jdbc.update("UPDATE schedule" 
+                + " SET checktime = ?"
+                + "WHERE dogtype=?"
+                + "AND day=day"
+                + "AND title=title", LocalDateTime.now(),dogtype);
+    }*/
 
 
 }
