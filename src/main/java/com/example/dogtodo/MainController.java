@@ -21,31 +21,34 @@ public class MainController {
     @Autowired
     private JdbcTemplate jdbc;
 
+    @Autowired
+    private ScheduleDao scheduleDao;
 
-
-    // 使うやつ
-    private List<Goods> rokuta;
-    private List<Goods> nanako;
+    @GetMapping("/test")
+    public String test(){
+        System.out.println(scheduleDao.findAll());
+        System.out.println(scheduleDao.findById(3));
+        return "";
+    }
 
     // 処理の中身
     @GetMapping("/indent") // 全体の初期ページ
     public String hello(String date, Goods goods, Model model) {
         LocalDate localDate = LocalDate.now();
         if (date != null ){ //日付指定（localDateにString型に直した日付を入れなおす）
-            
+            date = localDate.toString();
         }
 
         model.addAttribute("rokutaGohan", getGoods(0, localDate));
         model.addAttribute("nanakogohan", getGoods(1, localDate));
-
-       // printComment(model);
+        printComment(model);
 
         model.addAttribute("currentDate", date);
 
         return "indent";
     }
 
-    @PostMapping("/test")
+    @PostMapping("/test1")
     public String test(LocalDate date, RedirectAttributes attr) {
 
         System.out.println(date);
@@ -58,7 +61,6 @@ public class MainController {
     @PostMapping("/rokuplus") // ろくた追加ボタン
     public String rokuplus(String item, Model model, RedirectAttributes attr) {
         addDay(0, item, new Date());
-        printList(model);
       //  printComment(model);
         return "redirect:/indent";
     }
@@ -66,7 +68,6 @@ public class MainController {
     @PostMapping("/nanaplus") // ななこ追加ボタン
     public String nanaplus(String item, Model model, RedirectAttributes attr) {
         addDay(1, item, new Date());
-        printList(model);
       //  printComment(model);
         return "redirect:/indent";
     }
@@ -74,7 +75,6 @@ public class MainController {
     @PostMapping("/form") // コメント書込ボタン
     public String sample(String comm, Model model, RedirectAttributes attr) {
         addComment(LocalDate.now(), comm);
-        printList(model);
         printComment(model);
         return "redirect:/indent";
     }
@@ -88,22 +88,6 @@ public class MainController {
     }*/
 
     // メソッド作成
-    public void printList(Model model) { // チェックボックスのメソッド
-        rokuta = new ArrayList<Goods>(); // rokutaのリスト作成
-        List<Map<String, Object>> rokutaSQL = jdbc.queryForList("SELECT title,checktime FROM schedule WHERE dogtype=0");
-        for (int i = 0; i < rokutaSQL.size(); i++) {
-            String checktime;
-            if ((rokutaSQL.get(i)).get("checktime") == null) {
-                checktime = "";
-            } else {
-                checktime = (rokutaSQL.get(i)).get("checktime").toString();
-            }
-            rokuta.add(new Goods((rokutaSQL.get(i)).get("title").toString(), checktime));
-        }
-
-        model.addAttribute("rokutaGohans", rokuta); // 表示するために渡してる
-    }
-
     private List<Goods> getGoods(int dogType, LocalDate date) {
         List<Map<String, Object>> schedules = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ?", dogType, date);
         List<Goods> goods = new ArrayList<>();
@@ -121,27 +105,12 @@ public class MainController {
         return goods;
     }
 
-    //newコメント表示
-    /*
-    private getComment(){
-        
-        List<Map<String, Object>>text_comment = jdbc.queryForList(
-               "SELECT text FROM comment WHERE day=date");
-        String textcomm = "";
-        if(text_comment.size() != 0){
-            textcomm = (text_comment.get(0)).get("text").toString();
-        }
-        model.addAttribute("comm",textcomm);
-        
-    }
-    */
-
     //コメント表示
     public void printComment(Model model){
         String textcomm = "";
         
         List<Map<String, Object>>text_comment = jdbc.queryForList(
-               "SELECT text FROM comment WHERE day=date");
+               "SELECT text FROM comment WHERE day=day");
         if(text_comment.size() != 0){
             textcomm = (text_comment.get(0)).get("text").toString();
         }
