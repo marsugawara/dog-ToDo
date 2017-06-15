@@ -49,12 +49,13 @@ public class MainController {
     @GetMapping("/indent:{date}")
     public String helloworld(@PathVariable("date") String date, Model model){
         System.out.println(date);
-        if (date.equals(null) && date.equals("")){ //日付指定（localDateにString型に直した日付を入れなおす）
-            model.addAttribute("rokutaGohans", getGoods(0, LocalDate.parse(date)));
-            model.addAttribute("nanakogohans", getGoods(1, LocalDate.parse(date)));
-        } else{
+        System.out.println(date == null || date.equals(""));
+        if (date == null || date.equals("")){ //日付指定（localDateにString型に直した日付を入れなおす）
             model.addAttribute("rokutaGohans", getGoods(0, LocalDate.now()));
             model.addAttribute("nanakogohans", getGoods(1, LocalDate.now()));
+        } else {
+            model.addAttribute("rokutaGohans", getGoods(0, LocalDate.parse(date)));
+            model.addAttribute("nanakogohans", getGoods(1, LocalDate.parse(date)));
         }
 
         //model.addAttribute("rokutaGohans", getGoods(0, LocalDate.parse(date)));
