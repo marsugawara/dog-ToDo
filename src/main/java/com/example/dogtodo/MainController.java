@@ -40,7 +40,7 @@ public class MainController {
 
         model.addAttribute("rokutaGohans", getGoods(0, localDate));
         model.addAttribute("nanakogohans", getGoods(1, localDate));
-        printComment(model);
+     //   printComment(model);
    //     model.addAttribute("currentDate", date);
 
         return "indent";
@@ -57,7 +57,7 @@ public class MainController {
             model.addAttribute("rokutaGohans", getGoods(0, LocalDate.parse(date)));
             model.addAttribute("nanakogohans", getGoods(1, LocalDate.parse(date)));
         }
-        printComment(model);
+        printComment(LocalDate.parse(date), model);
       //  model.addAttribute("currentDate", date);
 
         return "indent";
@@ -97,17 +97,22 @@ public class MainController {
     }
 
     @PostMapping("/form") // コメント書込ボタン
-    public String sample(CommentForm form, RedirectAttributes attr) {
-        addComment(LocalDate.now(), form.getComm());
+    public String sample(CommentForm form, String catchDate, RedirectAttributes attr) {
+        LocalDate day = LocalDate.now();
+        if(catchDate.equals(null) == false && catchDate.equals("") == false){
+            day = LocalDate.parse(catchDate);
+        }
+
+        addComment(day, form.getComm());
         attr.addFlashAttribute(form.getComm());
-        
-        return "redirect:/indent";
+
+        return "redirect:/indent:" + day;
     }
-    
+
     @PostMapping("/form8")
     public String calendarSelect(String num01, RedirectAttributes attr){
         LocalDate day = LocalDate.parse(num01);
-        
+
         attr.addFlashAttribute("date", day);
         return "redirect:/indent:" + day;
     }
@@ -138,11 +143,10 @@ public class MainController {
     }
 
     //コメント表示
-    public void printComment(Model model){
+    public void printComment(LocalDate day, Model model){
         String textcomm = "";
         
-        List<Map<String, Object>>text_comment = jdbc.queryForList(
-               "SELECT text FROM comment WHERE day=day");
+        List<Map<String, Object>>text_comment = jdbc.queryForList("SELECT text FROM comment WHERE day=?",day);
         if(text_comment.size() != 0){
             textcomm = (text_comment.get(0)).get("text").toString();
         }
@@ -174,13 +178,13 @@ public class MainController {
         switch(k){
             case 0:
                 jdbc.update("INSERT INTO comment (text, day)"
-                        + " VALUES (?, ?)",text, LocalDate.now());
-               // System.out.println("0"+ LocalDate.now());
+                        + " VALUES (?, ?)",text, day);
+                System.out.println("0"+ LocalDate.now());
                 break;
             case 1:
                 jdbc.update("UPDATE comment" 
                         + " SET text = ?"
-                        + "WHERE day = ?",text, LocalDate.now());
+                        + "WHERE day = ?",text, day);
                 System.out.println("1"+ LocalDate.now());
                 break;
         }

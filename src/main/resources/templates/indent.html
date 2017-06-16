@@ -91,6 +91,7 @@
         <div class="padding">
             <p>「<span th:text="${comm}">今日も元気です</span>」</p>
 	        <form method="post" th:action="@{/form}">
+	           <input type="hidden" name="catchDate" th:value="${date}" />
 		        <input type="text" name="comm" placeholder="今日も元気です" />
 		        <input type="submit" value="書込"/>
 	        </form>
