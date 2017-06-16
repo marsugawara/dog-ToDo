@@ -34,34 +34,31 @@ public class MainController {
     @GetMapping("/indent") // 全体の初期ページ
     public String hello(String date, Goods goods, Model model) {
         LocalDate localDate = LocalDate.now();
-        if (date != null ){ //日付指定（localDateにString型に直した日付を入れなおす）
+    /*    if (date != null ){ //日付指定（localDateにString型に直した日付を入れなおす）
 
-        }
+        }*/
 
         model.addAttribute("rokutaGohans", getGoods(0, localDate));
         model.addAttribute("nanakogohans", getGoods(1, localDate));
         printComment(model);
-        model.addAttribute("currentDate", date);
+   //     model.addAttribute("currentDate", date);
 
         return "indent";
     }
     
     @GetMapping("/indent:{date}")
     public String helloworld(@PathVariable("date") String date, Model model){
-        System.out.println(date);
+        System.out.println(date);   //入ってきた日付の確認
         System.out.println(date == null || date.equals(""));
-        if (date == null || date.equals("")){ //日付指定（localDateにString型に直した日付を入れなおす）
+        if (date == null || date.equals("")){ 
             model.addAttribute("rokutaGohans", getGoods(0, LocalDate.now()));
             model.addAttribute("nanakogohans", getGoods(1, LocalDate.now()));
         } else {
             model.addAttribute("rokutaGohans", getGoods(0, LocalDate.parse(date)));
             model.addAttribute("nanakogohans", getGoods(1, LocalDate.parse(date)));
         }
-
-        //model.addAttribute("rokutaGohans", getGoods(0, LocalDate.parse(date)));
-        //model.addAttribute("nanakogohans", getGoods(1, LocalDate.parse(date)));
         printComment(model);
-        model.addAttribute("currentDate", date);
+      //  model.addAttribute("currentDate", date);
 
         return "indent";
     }
@@ -88,17 +85,21 @@ public class MainController {
     }
 
     @PostMapping("/nanaplus") // ななこ追加ボタン
-    public String nanaplus(String item, RedirectAttributes attr) {
-        addDay(1, item, LocalDate.now());
+    public String nanaplus(String item, String catchDate, RedirectAttributes attr) {
+        LocalDate day = LocalDate.now();
+        if(catchDate.equals(null) == false && catchDate.equals("") == false){
+            day = LocalDate.parse(catchDate);
+        }
+        addDay(1, item, day);
         attr.addFlashAttribute(item);
         
-        return "redirect:/indent";
+        return "redirect:/indent:" + day;
     }
 
     @PostMapping("/form") // コメント書込ボタン
-    public String sample(String comm, RedirectAttributes attr) {
-        addComment(LocalDate.now(), comm);
-        attr.addFlashAttribute(comm);
+    public String sample(CommentForm form, RedirectAttributes attr) {
+        addComment(LocalDate.now(), form.getComm());
+        attr.addFlashAttribute(form.getComm());
         
         return "redirect:/indent";
     }
