@@ -91,12 +91,11 @@ public class MainController {
         return "redirect:/indent:" + day;
     }
 
-    @PostMapping("/rokuplus") // ろくた追加ボタン
-    public String rokuplus(String item, String catchDate, RedirectAttributes attr) {
-        //addDay(0, item, LocalDate.now());
+    @PostMapping("/rokuPlus:{date}") // ろくた追加ボタン
+    public String rokuplus(@PathVariable("date") String date, String item, RedirectAttributes attr) {
         LocalDate day = LocalDate.now();
-        if(catchDate.equals(null) == false && catchDate.equals("") == false){
-            day = LocalDate.parse(catchDate);
+        if(date.equals(null) == false && date.equals("") == false){
+            day = LocalDate.parse(date);
         }
         addDay(0, item, day);
         attr.addFlashAttribute(item);
@@ -104,10 +103,9 @@ public class MainController {
         return "redirect:/indent:" + day;
     }
 
-    @PostMapping("/nanaplus:{date}") // ななこ追加ボタン
+    @PostMapping("/nanaPlus:{date}") // ななこ追加ボタン
     public String nanaplus(@PathVariable("date") String date, String item, RedirectAttributes attr) {
         LocalDate day = LocalDate.now();
-       // System.out.println(date);
         if(date.equals(null) == false && date.equals("") == false){
             day = LocalDate.parse(date);
         }
@@ -116,13 +114,19 @@ public class MainController {
         
         return "redirect:/indent:" + day;
     }
-    // ななこチェック後
-    @PostMapping("/na_aftercheck:{date}")
-    public String selectCheck(@PathVariable("date") String date, RedirectAttributes attr){
-       // System.out.println("checkbox: " + date);
+
+    @PostMapping("/ro_afterCheck:{date}")// ろくたチェック後
+    public String selectCheck0(@PathVariable("date") String date, RedirectAttributes attr){
+        LocalDateTime time = LocalDateTime.now();
+        addChecktime(date,time,0);
+        
+        return "redirect:/indent:" + date;
+    }
+
+    @PostMapping("/na_afterCheck:{date}")// ななこチェック後
+    public String selectCheck1(@PathVariable("date") String date, RedirectAttributes attr){
         LocalDateTime time = LocalDateTime.now();
         addChecktime(date,time,1);
-        //attr.addFlashAttribute();
         
         return "redirect:/indent:" + date;
     }
