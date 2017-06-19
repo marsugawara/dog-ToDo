@@ -75,7 +75,7 @@
                 <form method="post" th:action="@{/ro_afterCheck}" >
                 <table>
                     <tr th:each="rokutagohan : ${rokutaGohans}">
-                    <td><input type="checkbox" onChange="this.form.submit()"/></td>
+                    <td><input name="rokuClick" type="checkbox" onChange="this.form.submit()" value="true" th:value="${rokutagohan.id}"/></td>
                     <td th:text="${rokutagohan.title}"></td>
                     <td th:text="${rokutagohan.chtime}"></td>
                     </tr>

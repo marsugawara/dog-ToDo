@@ -1,9 +1,12 @@
 package com.example.dogtodo;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -113,10 +116,12 @@ public class MainController {
     }
 
     @PostMapping("/ro_afterCheck:{date}")// ろくたチェック後
-    public String selectCheck0(@PathVariable("date") String date, RedirectAttributes attr){
+    public String selectCheck0(@PathVariable("date") String date, int[] rokuClick, RedirectAttributes attr){
         LocalDateTime time = LocalDateTime.now();
-        addChecktime(time,0);
-        
+        for(int i=0; i<rokuClick.length; i++){
+            addChecktime(time, rokuClick[i]);
+        }
+
         return "redirect:/indent:" + date;
     }
 
@@ -126,7 +131,7 @@ public class MainController {
         for(int i=0;i<nanaClick.length;i++){
             addChecktime(time, nanaClick[i]);
         }
-        
+
         return "redirect:/indent:" + date;
     }
 
@@ -144,34 +149,29 @@ public class MainController {
         }
     }
 
-    @PostMapping("/comment") // コメント書込ボタン
-    public String sample(CommentForm form, String catchDate, RedirectAttributes attr) {
-        LocalDate day = LocalDate.now();
-        if(catchDate.equals(null) == false && catchDate.equals("") == false){
-            day = LocalDate.parse(catchDate);
-        }
-
-        addComment(day, form.getComm());
-        attr.addFlashAttribute(form.getComm());
-
-        return "redirect:/indent:" + day;
-    }
-
-
-
     // チェックリストの作成
     private List<Goods> getGoods(int dogType, LocalDate date) {
-        List<Map<String, Object>> schedules = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ?", dogType, date);
+        String checktime;
         List<Goods> goods = new ArrayList<Goods>();
+        List<Map<String, Object>> list;
+        List<Map<String, Object>> schedules;
+        list = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "朝ごはん");
+        if(list.size() == 0){
+            schedules = jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", dogType*2 + 1);
+        } else{
+            schedules = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "朝ごはん");
+        }
+        
+        list = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "夜ごはん");
+        if(list.size() == 0){
+            schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", (dogType+1)*2));
+        } else{
+            schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "夜ごはん"));
+        }
+        
+        schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ?", dogType, date));
 
-        /*for (Map<String, Object> schedule : schedules) {
-            if(schedule.get("title").toString().equals("朝ごはん") && schedule.get("checktime").toString().equals(null) == false){
-                schedules.remove(0);
-            }
-            
-        }*/
         for (Map<String, Object> schedule : schedules) {
-            String checktime;
             if ((schedule).get("checktime") == null) {
                 checktime = "";
             } else {
@@ -188,6 +188,25 @@ public class MainController {
         return goods;
     }
 
+    // 基本項目の追加
+    public void addDay(int dogtype, String title, LocalDate day) {
+        jdbc.update("INSERT INTO schedule (dogtype, title, day)"
+                + " VALUES(?, ?, ?)",dogtype,title,day);
+    }
+
+    @PostMapping("/comment") // コメント書込ボタン
+    public String sample(CommentForm form, String catchDate, RedirectAttributes attr) {
+        LocalDate day = LocalDate.now();
+        if(catchDate.equals(null) == false && catchDate.equals("") == false){
+            day = LocalDate.parse(catchDate);
+        }
+
+        addComment(day, form.getComm());
+        attr.addFlashAttribute(form.getComm());
+
+        return "redirect:/indent:" + day;
+    }
+
     //コメント表示
     public void printComment(LocalDate day, Model model){
         String textcomm = "";
@@ -198,13 +217,6 @@ public class MainController {
         }
         model.addAttribute("comm",textcomm);
         
-    }
-
-
-    // 基本項目の追加
-    public void addDay(int dogtype, String title, LocalDate day) {
-        jdbc.update("INSERT INTO schedule (dogtype, title, day)"
-                + " VALUES(?, ?, ?)",dogtype,title,day);
     }
 
     // コメントの追加
