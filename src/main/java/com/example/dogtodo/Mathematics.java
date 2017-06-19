@@ -3,8 +3,8 @@ package com.example.dogtodo;
 public class Mathematics {
     /**
      * 入力された値の平方根を求める。
-     * <p>
-     * <pre>
+     * <p></p>
+     * <pre></pre>
      * 0が入力された場合、0を返却する、
      * 負の値が入力された場合、{@link RuntimeException}を返却する。
      * 最大値を超える値が入力された場合、{@link RuntimeException}を返却する。
