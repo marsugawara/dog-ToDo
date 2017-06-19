@@ -1,15 +1,17 @@
 package com.example.dogtodo;
 
 public class Goods {
+    private int id;
     private String title;
     private String chtime;
     
     //コンストラクタ
     public Goods(){}
     
-    public Goods (String title, String chtime){
+    public Goods (String title, String chtime, int id){
         this.title = title;
         this.chtime = chtime;
+        this.id = id;
     }
     
     //表示メソッド
@@ -31,5 +33,12 @@ public class Goods {
     }
     public String getChtime(){
         return chtime;
+    }
+    //チェックID：セッター・ゲッター
+    public void setId(int id){
+        this.id = id;
+    }
+    public int getId(){
+        return id;
     }
 }

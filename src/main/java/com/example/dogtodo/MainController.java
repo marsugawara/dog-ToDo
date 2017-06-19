@@ -42,8 +42,6 @@ public class MainController {
     
     @GetMapping("/indent:{date}")
     public String helloworld(@PathVariable("date") String date, Model model){
-       // System.out.println(date);   //入ってきた日付の確認
-      //  System.out.println(date == null || date.equals(""));
         if (date == null || date.equals("")){ 
             model.addAttribute("rokutaGohans", getGoods(0, LocalDate.now()));
             model.addAttribute("nanakogohans", getGoods(1, LocalDate.now()));
@@ -54,7 +52,6 @@ public class MainController {
             model.addAttribute("date", LocalDate.parse(date));
         }
         printComment(LocalDate.parse(date), model);
-      //  model.addAttribute("currentDate", date);
 
         return "indent";
     }
@@ -118,34 +115,35 @@ public class MainController {
     @PostMapping("/ro_afterCheck:{date}")// ろくたチェック後
     public String selectCheck0(@PathVariable("date") String date, RedirectAttributes attr){
         LocalDateTime time = LocalDateTime.now();
-        addChecktime(date,time,0);
+        addChecktime(time,0);
         
         return "redirect:/indent:" + date;
     }
 
     @PostMapping("/na_afterCheck:{date}")// ななこチェック後
-    public String selectCheck1(@PathVariable("date") String date, RedirectAttributes attr){
+    public String selectCheck1(@PathVariable("date") String date, int[] nanaClick, RedirectAttributes attr){
         LocalDateTime time = LocalDateTime.now();
-        addChecktime(date,time,1);
+        for(int i=0;i<nanaClick.length;i++){
+            addChecktime(time, nanaClick[i]);
+        }
         
         return "redirect:/indent:" + date;
     }
 
     // チックされた時間の追加
-    public void addChecktime(String date, LocalDateTime time, int dogtype){
+      public void addChecktime(LocalDateTime time, int id){
         
-        
-        
-        
-        jdbc.update("UPDATE schedule" 
-                + " SET checktime = ?"
-                + "WHERE dogtype=?"
-                + "AND day=?"
-                + "AND title=title",time, dogtype, date);
-        System.out.println(time);
+        boolean flag = true;
+        if(jdbc.queryForList("SELECT checktime FROM schedule WHERE id = ?", id).get(0).get("checktime") != null){
+            flag = false;
+        }
+        if(flag){
+        jdbc.update("UPDATE schedule "
+                + "SET checktime = ?"
+                + "WHERE id = ?", time, id);
+        }
     }
-    
-    
+
     @PostMapping("/comment") // コメント書込ボタン
     public String sample(CommentForm form, String catchDate, RedirectAttributes attr) {
         LocalDate day = LocalDate.now();
@@ -184,7 +182,7 @@ public class MainController {
                 checktime = checktime.substring(0, checktime.indexOf("."));
                 System.out.println("checktime: " + checktime);
             }
-            goods.add(new Goods((schedule).get("title").toString(), checktime));
+            goods.add(new Goods((schedule).get("title").toString(), checktime, Integer.parseInt((schedule).get("id").toString())));
         }
 
         return goods;

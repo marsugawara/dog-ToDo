@@ -105,7 +105,7 @@
 	            <form method="post" th:action="@{/na_afterCheck}" >
 	            <table>
 	                <tr th:each="nanakogohan : ${nanakogohans}">
-	                <td><input type="checkbox" onChange="this.form.submit()"/></td>
+	                <td><input name="nanaClick" type="checkbox" onChange="this.form.submit()" value="true" th:value="${nanakogohan.id}"/></td>
 	                <td th:text="${nanakogohan.title}"></td>
 	                <td th:text="${nanakogohan.chtime}"></td>
 	                </tr>
