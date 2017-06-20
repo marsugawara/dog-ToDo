@@ -2,6 +2,10 @@
 <html lang="ja-jp">
 
 <head>
+<meta charset="utf-8"></meta>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+
   <title>ToDoリスト</title>
   <meta charset="UTF-8" />
   <link rel="stylesheet" type="text/css" href="style.css" />
@@ -34,113 +38,129 @@
   /*]]>*/
   
   </script>
-</head>
-
-<body>
-<div id = "site-box">
-
-    <div id = "a-box">
+  
+      <div id = "a-box">
         <h2>A サイトタイトル</h2>
         <input id="operationDay" type="hidden" name="catchDate" th:value="${date}" />
     </div>
+    
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"></link>
 
-    <div id = "b-box">
-        <h3 align="center"><form method="post" th:action="@{/yesterday}">
-            <input type="submit" value="昨日"/>
-        </form></h3><hr></hr>
-        <h3 align="center"><form method="post" th:action="@{/today}">
-            <input type="submit" value="今日"/>
-        </form></h3><hr></hr>
-        <h3 align="center"><form method="post" th:action="@{/tomorrow}">
-            <input type="submit" value="明日"/>
-        </form></h3><hr></hr>
-        <h3 align="center">カレンダー</h3>
-        <div align="center">
-        <form method="post" th:action="@{/calendar}">
-            <input type="date" required="required" name="num01"/>
-            <input type="submit" value="移動"/>
-        </form>
-        </div>
-        
-    </div>
+</head>
 
-    <div id = "c-box">
-        <!-- 左の箱 -->
-        <div id = "cc1-box">
-          <div align="center">
-            <h2>ろくた</h2>
-            <img src="img/dog.jpg" alt="写真" width="100" height="100"></img>
-                <!-- ArrayListの中身呼ぶ -->
-                <div id="roku_checkbox">
-                <form method="post" th:action="@{/ro_afterCheck}" >
-                <table>
-                    <tr th:each="rokutagohan : ${rokutaGohans}">
-                    <td><input name="rokuClick" type="checkbox" onChange="this.form.submit()" value="true" th:value="${rokutagohan.id}"/></td>
-                    <td th:text="${rokutagohan.title}"></td>
-                    <td th:text="${rokutagohan.chtime}"></td>
-                    </tr>
-                </table>
-                </form>
-                </div>
-            <!-- 追加項目 -->
-              <div class="btm">
-                 <div id="roku_addCheckbox">
-                 <form method="post" th:action="@{/rokuPlus}">
-                     <input type="text" required="required" name="item" placeholder="項目名" />
-                     <input type="hidden" name="dogtype" value="0"/>
-                     <input type="submit" value="追加" />
-                 </form>
-                 </div>
-              </div>
-          </div>
-        </div>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-        <!-- 右の箱 -->
-        <div id = "cc2-box">
-          <div align="center">
-            <h2>ななこ</h2>
-            <img src="img/dog.jpg" alt="写真" width="100" height="100"></img>
-	            <!-- ArrayListの中身呼ぶ -->
-	            <div id="nana_checkbox">
-	            <form method="post" th:action="@{/na_afterCheck}" >
-	            <table>
-	                <tr th:each="nanakogohan : ${nanakogohans}">
-	                <td><input name="nanaClick" type="checkbox" onChange="this.form.submit()" value="true" th:value="${nanakogohan.id}"/></td>
-	                <td th:text="${nanakogohan.title}"></td>
-	                <td th:text="${nanakogohan.chtime}"></td>
-	                </tr>
-	            </table>
-	            </form>
+
+	<div class="container-fluid">
+	    <div class="row">
+            <div class="col-lg-2">
+                    <div id = "b-box">
+			        <h3 align="center"><form method="post" th:action="@{/yesterday}">
+			            <input type="submit" value="昨日"/>
+			        </form></h3><hr></hr>
+			        <h3 align="center"><form method="post" th:action="@{/today}">
+			            <input type="submit" value="今日"/>
+			        </form></h3><hr></hr>
+			        <h3 align="center"><form method="post" th:action="@{/tomorrow}">
+			            <input type="submit" value="明日"/>
+			        </form></h3><hr></hr>
+			        <h3 align="center">カレンダー</h3>
+			        <div align="center">
+			        <form method="post" th:action="@{/calendar}">
+			            <input type="date" required="required" name="num01"/>
+			            <input type="submit" value="移動"/>
+			        </form>
+			        </div>
+                    </div>
+            </div>
+
+	        <div class="col-lg-10">
+	            <div class="row">
+	                <div class="col-xs-6">
+	                      <div id = "cc1-box">
+				          <div align="center">
+				            <h2>ろくた</h2>
+				            <img src="img/dog.jpg" alt="写真" width="100" height="100"></img>
+				                <!-- ArrayListの中身呼ぶ -->
+				                <div id="roku_checkbox">
+				                <form method="post" th:action="@{/ro_afterCheck}" >
+				                <table>
+				                    <tr th:each="rokutagohan : ${rokutaGohans}">
+				                    <td><input name="rokuClick" type="checkbox" onChange="this.form.submit()" value="true" th:value="${rokutagohan.id}"/></td>
+				                    <td th:text="${rokutagohan.title}"></td>
+				                    <td th:text="${rokutagohan.chtime}"></td>
+				                    </tr>
+				                </table>
+				                </form>
+				                </div>
+				            <!-- 追加項目 -->
+				              <div class="btm">
+				                 <div id="roku_addCheckbox">
+				                 <form method="post" th:action="@{/rokuPlus}">
+				                     <input type="text" required="required" name="item" placeholder="項目名" />
+				                     <input type="hidden" name="dogtype" value="0"/>
+				                     <input type="submit" value="追加" />
+				                 </form>
+				                 </div>
+				              </div>
+				          </div>
+				          </div>
+	                </div>
+
+	                <div class="col-xs-6">
+	                       <!-- 右の箱 -->
+				        <div id = "cc2-box">
+				          <div align="center">
+				            <h2>ななこ</h2>
+				            <img src="img/dog.jpg" alt="写真" width="100" height="100"></img>
+				                <!-- ArrayListの中身呼ぶ -->
+				                <div id="nana_checkbox">
+				                <form method="post" th:action="@{/na_afterCheck}" >
+				                <table>
+				                    <tr th:each="nanakogohan : ${nanakogohans}">
+				                    <td><input name="nanaClick" type="checkbox" onChange="this.form.submit()" value="true" th:value="${nanakogohan.id}"/></td>
+				                    <td th:text="${nanakogohan.title}"></td>
+				                    <td th:text="${nanakogohan.chtime}"></td>
+				                    </tr>
+				                </table>
+				                </form>
+				                </div>
+				             <!-- 追加項目 -->
+				               <div class="btm">
+				                  <div id="nana_addCheckbox">
+				                  <form method="post" th:action="@{/nanaPlus}">
+				                    <input type="text" required="required" name="item" placeholder="項目名" />
+				                    <input type="hidden" name="dogtype" value="1"/>
+				                    <input type="submit" value="追加" />
+				                  </form>
+				                  </div>
+				               </div>
+				         </div>
+				       </div>
+	                </div>
+
+	                <div class="col-xs-12">
+                        <div id = "d-box">
+				        <div class="padding">
+				            <p>「<span th:text="${comm}">今日も元気です</span>」</p>
+				            <form method="post" th:action="@{/comment}">
+				               <input type="hidden" name="catchDate" th:value="${date}" />
+				                <input type="text" required="required" name="comm" placeholder="今日も元気です" />
+				                <input type="submit" value="書込"/>
+				            </form>
+				        </div>
+				    </div>
+	                </div>
 	            </div>
-             <!-- 追加項目 -->
-               <div class="btm">
-                  <div id="nana_addCheckbox">
-                  <form method="post" th:action="@{/nanaPlus}">
-                    <input type="text" required="required" name="item" placeholder="項目名" />
-                    <input type="hidden" name="dogtype" value="1"/>
-                    <input type="submit" value="追加" />
-                  </form>
-                  </div>
-               </div>
-         </div>
-       </div>
-    </div>
-
-
-    <div id = "d-box">
-        <div class="padding">
-            <p>「<span th:text="${comm}">今日も元気です</span>」</p>
-	        <form method="post" th:action="@{/comment}">
-	           <input type="hidden" name="catchDate" th:value="${date}" />
-		        <input type="text" required="required" name="comm" placeholder="今日も元気です" />
-		        <input type="submit" value="書込"/>
-	        </form>
-        </div>
-    </div>
+	        </div>
+	    </div>
+	</div>
 
 
 
-</div>
 
 </body>
+<footer style="background-color:gray">Footer</footer>
 </html>

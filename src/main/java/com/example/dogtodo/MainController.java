@@ -136,7 +136,6 @@ public class MainController {
             flag = false;
         }
         if(flag){   //INSERTとUPDATEの分岐
-            System.out.println(id);
             switch(id){
                 case 1:
                     jdbc.update("INSERT INTO schedule (dogtype, title, day, checktime)"
@@ -197,7 +196,6 @@ public class MainController {
             goods.add(new Goods((schedule).get("title").toString(), checktime, Integer.parseInt((schedule).get("id").toString())));
         }
 
-        System.out.println("Sche" + schedules);
         return goods;
     }
 
