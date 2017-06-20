@@ -38,12 +38,8 @@
   /*]]>*/
   
   </script>
-  
-      <div id = "a-box">
-        <h2>A サイトタイトル</h2>
-        <input id="operationDay" type="hidden" name="catchDate" th:value="${date}" />
-    </div>
-    
+<header style="background-color:gray">Header</header>
+
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"></link>
 
 </head>
@@ -54,35 +50,60 @@
 
 
 	<div class="container-fluid">
+	
+        <div class="col-xs-12 bg-info " style="height:100px;">
+             <h2>A サイトタイトル</h2>
+             <input id="operationDay" type="hidden" name="catchDate" th:value="${date}" />
+        </div>
+	
+	
 	    <div class="row">
             <div class="col-lg-2">
-                    <div id = "b-box">
-			        <h3 align="center"><form method="post" th:action="@{/yesterday}">
-			            <input type="submit" value="昨日"/>
-			        </form></h3><hr></hr>
-			        <h3 align="center"><form method="post" th:action="@{/today}">
-			            <input type="submit" value="今日"/>
-			        </form></h3><hr></hr>
-			        <h3 align="center"><form method="post" th:action="@{/tomorrow}">
-			            <input type="submit" value="明日"/>
-			        </form></h3><hr></hr>
-			        <h3 align="center">カレンダー</h3>
-			        <div align="center">
-			        <form method="post" th:action="@{/calendar}">
-			            <input type="date" required="required" name="num01"/>
-			            <input type="submit" value="移動"/>
-			        </form>
-			        </div>
-                    </div>
+                <div class="row bg-info">
+                    <div class="col-xs-8">
+				        <h3 align="center"><form method="post" th:action="@{/yesterday}">
+				            <input type="submit" value="昨日"/>
+				        </form></h3><hr></hr>
+				    </div>
+				    <div class="col-xs-8">
+				        <h3 align="center"><form method="post" th:action="@{/today}">
+				            <input type="submit" value="今日"/>
+				        </form></h3><hr></hr>
+				    </div>
+				    <div class="col-xs-8">
+				        <h3 align="center"><form method="post" th:action="@{/tomorrow}">
+				            <input type="submit" value="明日"/>
+				        </form></h3><hr></hr>
+				    </div>
+                    <div class="col-xs-12">
+				        <h3 align="center">カレンダー</h3>
+				        <div align="center">
+				        <div class="form-group">
+				        <form method="post" th:action="@{/calendar}">
+				            <input type="date" required="required" class="form-control" name="num01"/>
+				            <input type="submit" value="移動"/>
+				        </form>
+				        </div>
+				        </div>
+				    </div>
+			    </div>
             </div>
 
+
 	        <div class="col-lg-10">
+
+	        <div class="col-xs-12" style="height:20px;"></div>
+
 	            <div class="row">
 	                <div class="col-xs-6">
-	                      <div id = "cc1-box">
-				          <div align="center">
-				            <h2>ろくた</h2>
-				            <img src="img/dog.jpg" alt="写真" width="100" height="100"></img>
+                       <div class="panel panel-default">
+                          <div class="panel-heading">
+                            <h3 class="panel-title">
+                               <h2>ろくた</h2>   <!-- 左の箱 -->
+                                <img src="img/dog.jpg" alt="写真" width="100" height="100"></img>
+                            </h3>
+                          </div>
+                          <div class="panel-body">
 				                <!-- ArrayListの中身呼ぶ -->
 				                <div id="roku_checkbox">
 				                <form method="post" th:action="@{/ro_afterCheck}" >
@@ -95,63 +116,74 @@
 				                </table>
 				                </form>
 				                </div>
+				        </div>
 				            <!-- 追加項目 -->
+				        <div class="panel-footer">
 				              <div class="btm">
+				                 <div class="form-group">
 				                 <div id="roku_addCheckbox">
 				                 <form method="post" th:action="@{/rokuPlus}">
-				                     <input type="text" required="required" name="item" placeholder="項目名" />
+				                     <input type="text" required="required" class="form-control" name="item" placeholder="項目名" />
 				                     <input type="hidden" name="dogtype" value="0"/>
 				                     <input type="submit" value="追加" />
 				                 </form>
+				                 </div>
 				                 </div>
 				              </div>
 				          </div>
 				          </div>
 	                </div>
 
+   
+
 	                <div class="col-xs-6">
-	                       <!-- 右の箱 -->
-				        <div id = "cc2-box">
-				          <div align="center">
-				            <h2>ななこ</h2>
-				            <img src="img/dog.jpg" alt="写真" width="100" height="100"></img>
-				                <!-- ArrayListの中身呼ぶ -->
-				                <div id="nana_checkbox">
-				                <form method="post" th:action="@{/na_afterCheck}" >
-				                <table>
-				                    <tr th:each="nanakogohan : ${nanakogohans}">
-				                    <td><input name="nanaClick" type="checkbox" onChange="this.form.submit()" value="true" th:value="${nanakogohan.id}"/></td>
-				                    <td th:text="${nanakogohan.title}"></td>
-				                    <td th:text="${nanakogohan.chtime}"></td>
-				                    </tr>
-				                </table>
-				                </form>
-				                </div>
-				             <!-- 追加項目 -->
-				               <div class="btm">
-				                  <div id="nana_addCheckbox">
-				                  <form method="post" th:action="@{/nanaPlus}">
-				                    <input type="text" required="required" name="item" placeholder="項目名" />
-				                    <input type="hidden" name="dogtype" value="1"/>
-				                    <input type="submit" value="追加" />
-				                  </form>
-				                  </div>
-				               </div>
-				         </div>
-				       </div>
+				       <div class="panel panel-default">
+						  <div class="panel-heading">
+						    <h3 class="panel-title">
+						       <h2>ななこ</h2>   <!-- 右の箱 -->
+                                <img src="img/dog.jpg" alt="写真" width="100" height="100"></img>
+                            </h3>
+						  </div>
+						  <div class="panel-body">
+                                <!-- ArrayListの中身呼ぶ -->
+                                <div id="nana_checkbox">
+                                <form method="post" th:action="@{/na_afterCheck}" >
+                                <table>
+                                    <tr th:each="nanakogohan : ${nanakogohans}">
+                                    <td><input name="nanaClick" type="checkbox" onChange="this.form.submit()" value="true" th:value="${nanakogohan.id}"/></td>
+                                    <td th:text="${nanakogohan.title}"></td>
+                                    <td th:text="${nanakogohan.chtime}"></td>
+                                    </tr>
+                                </table>
+                                </form>
+                                </div>
+                          </div>
+                                <!-- 追加項目 -->
+                          <div class="panel-footer">
+                                <div class="btm">
+                                  <div class="form-group">
+                                  <div id="nana_addCheckbox">
+                                  <form method="post" th:action="@{/nanaPlus}">
+                                    <input type="text" required="required" class="form-control" name="item" placeholder="項目名" />
+                                    <input type="hidden" name="dogtype" value="1"/>
+                                    <input type="submit" value="追加" />
+                                  </form>
+                                  </div>
+                                  </div>
+                                </div>
+						  </div>
+						</div>
 	                </div>
 
-	                <div class="col-xs-12">
-                        <div id = "d-box">
-				        <div class="padding">
+	                <div class="col-xs-12 bg-info">
 				            <p>「<span th:text="${comm}">今日も元気です</span>」</p>
+				            <div class="form-group">
 				            <form method="post" th:action="@{/comment}">
 				               <input type="hidden" name="catchDate" th:value="${date}" />
-				                <input type="text" required="required" name="comm" placeholder="今日も元気です" />
+				                <input type="text" required="required" class="form-control" name="comm" placeholder="今日も元気です" />
 				                <input type="submit" value="書込"/>
 				            </form>
-				        </div>
-				    </div>
+				            </div>
 	                </div>
 	            </div>
 	        </div>
