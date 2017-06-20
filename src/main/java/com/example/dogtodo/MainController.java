@@ -112,7 +112,7 @@ public class MainController {
     public String selectCheck0(@PathVariable("date") String date, int[] rokuClick, RedirectAttributes attr){
         LocalDateTime time = LocalDateTime.now();
         for(int i=0; i<rokuClick.length; i++){
-            addChecktime(time, rokuClick[i]);
+            addChecktime(date, time, rokuClick[i]);
         }
 
         return "redirect:/indent:" + date;
@@ -122,23 +122,44 @@ public class MainController {
     public String selectCheck1(@PathVariable("date") String date, int[] nanaClick, RedirectAttributes attr){
         LocalDateTime time = LocalDateTime.now();
         for(int i=0;i<nanaClick.length;i++){
-            addChecktime(time, nanaClick[i]);
+            addChecktime(date, time, nanaClick[i]);
         }
 
         return "redirect:/indent:" + date;
     }
 
     // チックされた時間の追加
-      public void addChecktime(LocalDateTime time, int id){
+      public void addChecktime(@PathVariable("date") String date, LocalDateTime time, int id){
         
         boolean flag = true;
         if(jdbc.queryForList("SELECT checktime FROM schedule WHERE id = ?", id).get(0).get("checktime") != null){
             flag = false;
         }
-        if(flag){
-        jdbc.update("UPDATE schedule "
-                + "SET checktime = ?"
-                + "WHERE id = ?", time, id);
+        if(flag){   //INSERTとUPDATEの分岐
+            System.out.println(id);
+            switch(id){
+                case 1:
+                    jdbc.update("INSERT INTO schedule (dogtype, title, day, checktime)"
+                            + " VALUES(0, '朝ごはん', ?, ?)", date, time);
+                    break;
+                case 2:
+                    jdbc.update("INSERT INTO schedule (dogtype, title, day, checktime)"
+                            + " VALUES(0, '夜ごはん', ?, ?)", date, time);
+                    break;
+                case 3:
+                    jdbc.update("INSERT INTO schedule (dogtype, title, day, checktime)"
+                            + " VALUES(1, '朝ごはん', ?, ?)", date, time);
+                    break;
+                case 4:
+                    jdbc.update("INSERT INTO schedule (dogtype, title, day, checktime)"
+                            + " VALUES(1, '夜ごはん', ?, ?)", date, time);
+                    break;
+    
+                default:
+                    jdbc.update("UPDATE schedule "
+                            + "SET checktime = ?"
+                            + "WHERE id = ?", time, id);
+            }
         }
     }
 
@@ -150,19 +171,19 @@ public class MainController {
         List<Map<String, Object>> schedules;
         list = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "朝ごはん");
         if(list.size() == 0){
-            schedules = jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", dogType*2 + 1);    //追加時INSERT
+            schedules = jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", dogType*2 + 1);
         } else{
             schedules = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "朝ごはん");
         }
         
         list = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "夜ごはん");
         if(list.size() == 0){
-            schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", (dogType+1)*2));    //追加時INSERT
+            schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", (dogType+1)*2));
         } else{
             schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "夜ごはん"));
         }
         
-        schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ?", dogType, date));
+        schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title NOT IN (?, ?)", dogType, date, "朝ごはん", "夜ごはん"));
 
         for (Map<String, Object> schedule : schedules) {
             if ((schedule).get("checktime") == null) {
@@ -176,6 +197,7 @@ public class MainController {
             goods.add(new Goods((schedule).get("title").toString(), checktime, Integer.parseInt((schedule).get("id").toString())));
         }
 
+        System.out.println("Sche" + schedules);
         return goods;
     }
 

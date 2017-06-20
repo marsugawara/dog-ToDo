@@ -57,7 +57,7 @@
         <h3 align="center">カレンダー</h3>
         <div align="center">
         <form method="post" th:action="@{/calendar}">
-            <input type="date" name="num01"/>
+            <input type="date" required="required" name="num01"/>
             <input type="submit" value="移動"/>
         </form>
         </div>
@@ -86,7 +86,7 @@
               <div class="btm">
                  <div id="roku_addCheckbox">
                  <form method="post" th:action="@{/rokuPlus}">
-                     <input type="text" name="item" placeholder="項目名" />
+                     <input type="text" required="required" name="item" placeholder="項目名" />
                      <input type="hidden" name="dogtype" value="0"/>
                      <input type="submit" value="追加" />
                  </form>
@@ -116,7 +116,7 @@
                <div class="btm">
                   <div id="nana_addCheckbox">
                   <form method="post" th:action="@{/nanaPlus}">
-                    <input type="text" name="item" placeholder="項目名" />
+                    <input type="text" required="required" name="item" placeholder="項目名" />
                     <input type="hidden" name="dogtype" value="1"/>
                     <input type="submit" value="追加" />
                   </form>
@@ -132,7 +132,7 @@
             <p>「<span th:text="${comm}">今日も元気です</span>」</p>
 	        <form method="post" th:action="@{/comment}">
 	           <input type="hidden" name="catchDate" th:value="${date}" />
-		        <input type="text" name="comm" placeholder="今日も元気です" />
+		        <input type="text" required="required" name="comm" placeholder="今日も元気です" />
 		        <input type="submit" value="書込"/>
 	        </form>
         </div>
