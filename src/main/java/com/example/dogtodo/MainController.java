@@ -28,13 +28,6 @@ public class MainController {
     @Autowired
     private ScheduleDao scheduleDao;
 
-    @GetMapping("/test")
-    public String test(){
-        System.out.println(scheduleDao.findAll());
-        System.out.println(scheduleDao.findById(3));
-        return "";
-    }
-
     // 処理の中身
     @GetMapping("/indent") // 全体の初期ページ
     public String hello(String date, Goods goods, Model model) {
@@ -157,14 +150,14 @@ public class MainController {
         List<Map<String, Object>> schedules;
         list = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "朝ごはん");
         if(list.size() == 0){
-            schedules = jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", dogType*2 + 1);
+            schedules = jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", dogType*2 + 1);    //追加時INSERT
         } else{
             schedules = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "朝ごはん");
         }
         
         list = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "夜ごはん");
         if(list.size() == 0){
-            schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", (dogType+1)*2));
+            schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", (dogType+1)*2));    //追加時INSERT
         } else{
             schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "夜ごはん"));
         }
@@ -176,11 +169,9 @@ public class MainController {
                 checktime = "";
             } else {
                 //時分秒のみ表示する
-                //System.out.println((schedule).get("checktime"));
                 checktime = (schedule).get("checktime").toString();
                 checktime = checktime.split(" ")[1];
                 checktime = checktime.substring(0, checktime.indexOf("."));
-                System.out.println("checktime: " + checktime);
             }
             goods.add(new Goods((schedule).get("title").toString(), checktime, Integer.parseInt((schedule).get("id").toString())));
         }
@@ -237,13 +228,11 @@ public class MainController {
             case 0:
                 jdbc.update("INSERT INTO comment (text, day)"
                         + " VALUES (?, ?)",text, day);
-                System.out.println("0"+ LocalDate.now());
                 break;
             case 1:
                 jdbc.update("UPDATE comment" 
                         + " SET text = ?"
                         + "WHERE day = ?",text, day);
-                System.out.println("1"+ LocalDate.now());
                 break;
         }
     }

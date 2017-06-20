@@ -13,13 +13,8 @@ public class Goods {
         this.chtime = chtime;
         this.id = id;
     }
-    
-    //表示メソッド
-    public void printCheck(){
-        System.out.println("項目：" +title +"時間：" +chtime);
-    }
-    
-    
+
+
     //チェック項目名：ゲッター・セッター
     public void setTitle(String title){
         this.title = title;
