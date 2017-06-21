@@ -33,10 +33,10 @@ public class MainController {
     public String hello(String date, Goods goods, Model model) {
         LocalDate localDate = LocalDate.now();
 
-        return "redirect:/indent:" + localDate;
+        return "redirect:/indent/" + localDate;
     }
     
-    @GetMapping("/indent:{date}")
+    @GetMapping("/indent/{date}")
     public String helloworld(@PathVariable("date") String date, Model model){
         if (date == null || date.equals("")){ 
             model.addAttribute("rokutaGohans", getGoods(0, LocalDate.now()));
@@ -57,7 +57,7 @@ public class MainController {
         LocalDate day = LocalDate.now().minusDays(1);
 
         attr.addFlashAttribute("date", day);
-        return "redirect:/indent:" + day;
+        return "redirect:/indent/" + day;
     }
 
     @PostMapping("/today")
@@ -65,7 +65,7 @@ public class MainController {
         LocalDate day = LocalDate.now();
 
         attr.addFlashAttribute("date", day);
-        return "redirect:/indent:" + day;
+        return "redirect:/indent/" + day;
     }
 
     @PostMapping("/tomorrow")
@@ -73,7 +73,7 @@ public class MainController {
         LocalDate day = LocalDate.now().plusDays(1);
 
         attr.addFlashAttribute("date", day);
-        return "redirect:/indent:" + day;
+        return "redirect:/indent/" + day;
     }
 
     @PostMapping("/calendar")
@@ -81,7 +81,7 @@ public class MainController {
         LocalDate day = LocalDate.parse(num01);
 
         attr.addFlashAttribute("date", day);
-        return "redirect:/indent:" + day;
+        return "redirect:/indent/" + day;
     }
 
     @PostMapping("/rokuPlus:{date}") // ろくた追加ボタン
@@ -93,7 +93,7 @@ public class MainController {
         addDay(0, item, day);
         attr.addFlashAttribute(item);
         
-        return "redirect:/indent:" + day;
+        return "redirect:/indent/" + day;
     }
 
     @PostMapping("/nanaPlus:{date}") // ななこ追加ボタン
@@ -105,7 +105,7 @@ public class MainController {
         addDay(1, item, day);
         attr.addFlashAttribute(item);
         
-        return "redirect:/indent:" + day;
+        return "redirect:/indent/" + day;
     }
 
     @PostMapping("/ro_afterCheck:{date}")// ろくたチェック後
@@ -115,7 +115,7 @@ public class MainController {
             addChecktime(date, time, rokuClick[i]);
         }
 
-        return "redirect:/indent:" + date;
+        return "redirect:/indent/" + date;
     }
 
     @PostMapping("/na_afterCheck:{date}")// ななこチェック後
@@ -125,7 +125,7 @@ public class MainController {
             addChecktime(date, time, nanaClick[i]);
         }
 
-        return "redirect:/indent:" + date;
+        return "redirect:/indent/" + date;
     }
 
     // チックされた時間の追加
@@ -190,8 +190,7 @@ public class MainController {
             } else {
                 //時分秒のみ表示する
                 checktime = (schedule).get("checktime").toString();
-                checktime = checktime.split(" ")[1];
-                checktime = checktime.substring(0, checktime.indexOf("."));
+                checktime = "(" +checktime.substring(0,16) + ")";
             }
             goods.add(new Goods((schedule).get("title").toString(), checktime, Integer.parseInt((schedule).get("id").toString())));
         }
@@ -215,7 +214,7 @@ public class MainController {
         addComment(day, form.getComm());
         attr.addFlashAttribute(form.getComm());
 
-        return "redirect:/indent:" + day;
+        return "redirect:/indent/" + day;
     }
 
     //コメント表示
