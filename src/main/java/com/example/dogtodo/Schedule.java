@@ -11,7 +11,6 @@ public class Schedule {
     private int id;
     private int dogtyoe;
     private String title;
-    private int endcheck;
     private LocalDate day;
     private LocalDateTime checktime;
 

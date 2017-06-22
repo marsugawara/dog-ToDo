@@ -1,6 +1,7 @@
 package com.example.dogtodo;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -18,13 +19,41 @@ public class ScheduleDao {
     public List<Schedule> findAll(){
         return jdbc.query("SELECT * FROM schedule",new BeanPropertyRowMapper<>(Schedule.class));
     }
-    
+
     public List<Map<String, Object>> findById(int id){
         return jdbc.queryForList("SELECT * FROM schedule WHERE id=?", id);
     }
-    
-    /*public List<Schedule> findDay(int dogtype, String title, LocalDate day){
-        return jdbc.query("INSERT INTO schedule (dogtype, title, day)"
-                + " VALUES(?, ?, ?)",dogtype,title,day);
-    }*/
+
+    public void checkInsert(DogType dogType, Title title, String day, LocalDateTime checkTime){
+        jdbc.update("INSERT INTO schedule (dogtype, title, day, checktime)"
+                + " VALUES(?, ?, ?, ?)", dogType.getValue(), title.getValue(), day, checkTime);
+    }
+
+    public List<Schedule> findScheduleByDogTypeDayAndTitle(DogType dogType, LocalDate day, Title title){
+        return jdbc.query("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?",
+                new BeanPropertyRowMapper<>(Schedule.class), dogType.getValue(), day, title.getValue());
+    }
+
+    public Schedule findScheduleByBreakfastId(DogType dogType){
+        return jdbc.queryForObject("SELECT * FROM schedule WHERE id = ?",
+                new BeanPropertyRowMapper<>(Schedule.class), dogType.getValue()*2 + 1);
+    }
+
+    public Schedule findScheduleByDinnerId(DogType dogType){
+        return jdbc.queryForObject("SELECT * FROM schedule WHERE id = ?",
+                new BeanPropertyRowMapper<>(Schedule.class), (dogType.getValue()+1)*2);
+    }
+
+    public List<Schedule> findScheduleByDogTypeAndDay(DogType dogType, LocalDate day, Title breakfast, Title dinner){
+        return jdbc.query("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title NOT IN (?, ?)",
+                new BeanPropertyRowMapper<>(Schedule.class), dogType, day, breakfast.getValue(), dinner.getValue());
+    }
+
+    public void addDay(int dogType, String title, LocalDate day){
+        jdbc.update("INSERT INTO schedule (dogtype, title, day)"
+                + " VALUES(?, ?, ?)",dogType,title,day);
+    }
+
+
+
 }

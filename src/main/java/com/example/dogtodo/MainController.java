@@ -27,6 +27,9 @@ public class MainController {
 
     @Autowired
     private ScheduleDao scheduleDao;
+    
+    @Autowired
+    private CommentDao commentDao;
 
     // 処理の中身
     @GetMapping("/indent") // 全体の初期ページ
@@ -135,23 +138,19 @@ public class MainController {
         if(jdbc.queryForList("SELECT checktime FROM schedule WHERE id = ?", id).get(0).get("checktime") != null){
             flag = false;
         }
-        if(flag){   //INSERTとUPDATEの分岐
+        if(flag){
             switch(id){
                 case 1:
-                    jdbc.update("INSERT INTO schedule (dogtype, title, day, checktime)"
-                            + " VALUES(0, '朝ごはん', ?, ?)", date, time);
+                    scheduleDao.checkInsert(DogType.ROKUTA, Title.BREAKFAST, date, time);
                     break;
                 case 2:
-                    jdbc.update("INSERT INTO schedule (dogtype, title, day, checktime)"
-                            + " VALUES(0, '夜ごはん', ?, ?)", date, time);
+                    scheduleDao.checkInsert(DogType.ROKUTA, Title.DINNER, date, time);
                     break;
                 case 3:
-                    jdbc.update("INSERT INTO schedule (dogtype, title, day, checktime)"
-                            + " VALUES(1, '朝ごはん', ?, ?)", date, time);
+                    scheduleDao.checkInsert(DogType.NANAKO, Title.BREAKFAST, date, time);
                     break;
                 case 4:
-                    jdbc.update("INSERT INTO schedule (dogtype, title, day, checktime)"
-                            + " VALUES(1, '夜ごはん', ?, ?)", date, time);
+                    scheduleDao.checkInsert(DogType.NANAKO, Title.DINNER, date, time);
                     break;
     
                 default:
@@ -166,49 +165,43 @@ public class MainController {
     private List<Goods> getGoods(int dogType, LocalDate date) {
         String checktime;
         List<Goods> goods = new ArrayList<Goods>();
-        List<Map<String, Object>> list;
-        List<Map<String, Object>> schedules;
-        list = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "朝ごはん");
-        if(list.size() == 0){
-            schedules = jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", dogType*2 + 1);
+        List<Schedule> schedules = new ArrayList<>();
+        if(scheduleDao.findScheduleByDogTypeDayAndTitle(DogType.of(dogType), date, Title.BREAKFAST).size() == 0){
+            schedules.add(scheduleDao.findScheduleByBreakfastId(DogType.of(dogType)));
         } else{
-            schedules = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "朝ごはん");
+            schedules.addAll(scheduleDao.findScheduleByDogTypeDayAndTitle(DogType.of(dogType), date, Title.BREAKFAST));
+        }
+        if(scheduleDao.findScheduleByDogTypeDayAndTitle(DogType.of(dogType), date, Title.DINNER).size() == 0){
+            schedules.add(scheduleDao.findScheduleByDinnerId(DogType.of(dogType)));
+        } else{
+            schedules.addAll(scheduleDao.findScheduleByDogTypeDayAndTitle(DogType.of(dogType), date, Title.DINNER));
         }
         
-        list = jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "夜ごはん");
-        if(list.size() == 0){
-            schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE id = ?", (dogType+1)*2));
-        } else{
-            schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title = ?", dogType, date, "夜ごはん"));
-        }
+        schedules.addAll(scheduleDao.findScheduleByDogTypeAndDay(DogType.of(dogType), date, Title.BREAKFAST, Title.DINNER));
         
-        schedules.addAll(jdbc.queryForList("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title NOT IN (?, ?)", dogType, date, "朝ごはん", "夜ごはん"));
-
-        for (Map<String, Object> schedule : schedules) {
-            if ((schedule).get("checktime") == null) {
+        for (Schedule schedule : schedules) {
+            if ((schedule).getChecktime() == null) {
                 checktime = "";
             } else {
                 //時分秒のみ表示する
-                checktime = (schedule).get("checktime").toString();
-                checktime = "(" +checktime.substring(0,16) + ")";
+                checktime = "(" + schedule.getChecktime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")) + ")";
             }
-            goods.add(new Goods((schedule).get("title").toString(), checktime, Integer.parseInt((schedule).get("id").toString())));
+            goods.add(new Goods((schedule).getTitle().toString(), checktime, (schedule).getId()));
         }
 
         return goods;
     }
 
     // 基本項目の追加
-    public void addDay(int dogtype, String title, LocalDate day) {
-        jdbc.update("INSERT INTO schedule (dogtype, title, day)"
-                + " VALUES(?, ?, ?)",dogtype,title,day);
+    public void addDay(int dogType, String title, LocalDate day) {
+        scheduleDao.addDay(dogType, title, day);
     }
 
-    @PostMapping("/comment") // コメント書込ボタン
-    public String sample(CommentForm form, String catchDate, RedirectAttributes attr) {
+    @PostMapping("/comment/{date}") // コメント書込ボタン
+    public String sample(CommentForm form, @PathVariable("date") String date, RedirectAttributes attr) {
         LocalDate day = LocalDate.now();
-        if(catchDate.equals(null) == false && catchDate.equals("") == false){
-            day = LocalDate.parse(catchDate);
+        if(date.equals(null) == false && date.equals("") == false){
+            day = LocalDate.parse(date);
         }
 
         addComment(day, form.getComm());
@@ -221,7 +214,7 @@ public class MainController {
     public void printComment(LocalDate day, Model model){
         String textcomm = "";
         
-        List<Map<String, Object>>text_comment = jdbc.queryForList("SELECT text FROM comment WHERE day=?",day);
+        List<Map<String, Object>>text_comment = commentDao.findCommentDay(day);
         if(text_comment.size() != 0){
             textcomm = (text_comment.get(0)).get("text").toString();
         }
@@ -231,7 +224,7 @@ public class MainController {
 
     // コメントの追加
     public void addComment(LocalDate day, String text){
-        List<Map<String, Object>> comm_daySQL = jdbc.queryForList("SELECT day FROM comment");
+        List<Map<String, Object>> comm_daySQL = commentDao.findComment();
         
         int k = 0;
         for (int i = 0; i < comm_daySQL.size(); i++){
@@ -245,13 +238,10 @@ public class MainController {
         }
         switch(k){
             case 0:
-                jdbc.update("INSERT INTO comment (text, day)"
-                        + " VALUES (?, ?)",text, day);
+                commentDao.commInsert(text, day);
                 break;
             case 1:
-                jdbc.update("UPDATE comment" 
-                        + " SET text = ?"
-                        + "WHERE day = ?",text, day);
+                commentDao.commUpdate(text, day);
                 break;
         }
     }
