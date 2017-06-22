@@ -46,7 +46,7 @@ public class ScheduleDao {
 
     public List<Schedule> findScheduleByDogTypeAndDay(DogType dogType, LocalDate day, Title breakfast, Title dinner){
         return jdbc.query("SELECT * FROM schedule WHERE dogtype = ? AND day = ? AND title NOT IN (?, ?)",
-                new BeanPropertyRowMapper<>(Schedule.class), dogType, day, breakfast.getValue(), dinner.getValue());
+                new BeanPropertyRowMapper<>(Schedule.class), dogType.getValue(), day, breakfast.getValue(), dinner.getValue());
     }
 
     public void addDay(int dogType, String title, LocalDate day){
