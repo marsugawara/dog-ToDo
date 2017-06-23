@@ -16,17 +16,20 @@ public class ScheduleDao {
     @Autowired
     private JdbcTemplate jdbc;
 
-    public List<Schedule> findAll(){
-        return jdbc.query("SELECT * FROM schedule",new BeanPropertyRowMapper<>(Schedule.class));
-    }
-
-    public List<Map<String, Object>> findById(int id){
-        return jdbc.queryForList("SELECT * FROM schedule WHERE id=?", id);
+    public List<Schedule> checkFlag(int id){
+        return jdbc.query("SELECT checktime FROM schedule WHERE id = ?",
+                new BeanPropertyRowMapper<>(Schedule.class),id);
     }
 
     public void checkInsert(DogType dogType, Title title, String day, LocalDateTime checkTime){
         jdbc.update("INSERT INTO schedule (dogtype, title, day, checktime)"
                 + " VALUES(?, ?, ?, ?)", dogType.getValue(), title.getValue(), day, checkTime);
+    }
+
+    public void checkUpdate(LocalDateTime checkTime, int id){
+        jdbc.update("UPDATE schedule "
+                + "SET checktime = ?"
+                + "WHERE id = ?", checkTime, id);
     }
 
     public List<Schedule> findScheduleByDogTypeDayAndTitle(DogType dogType, LocalDate day, Title title){

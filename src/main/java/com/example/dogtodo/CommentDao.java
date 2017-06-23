@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -14,12 +15,12 @@ public class CommentDao {
     @Autowired
     private JdbcTemplate jdbc;
 
-    public List<Map<String, Object>> findCommentDay(LocalDate day){
-        return jdbc.queryForList("SELECT text FROM comment WHERE day=?",day);
+    public List<Comment> findCommentDay(LocalDate day){
+        return jdbc.query("SELECT text FROM comment WHERE day=?",new BeanPropertyRowMapper<>(Comment.class),day);
     }
 
-    public List<Map<String, Object>> findComment(){
-        return jdbc.queryForList("SELECT day FROM comment");
+    public List<Comment> findComment(){
+        return jdbc.query("SELECT day FROM comment",new BeanPropertyRowMapper<>(Comment.class));
     }
 
     public void commInsert(String text, LocalDate day){

@@ -135,7 +135,7 @@ public class MainController {
       public void addChecktime(@PathVariable("date") String date, LocalDateTime time, int id){
         
         boolean flag = true;
-        if(jdbc.queryForList("SELECT checktime FROM schedule WHERE id = ?", id).get(0).get("checktime") != null){
+        if(scheduleDao.checkFlag(id).get(0).getChecktime() != null){
             flag = false;
         }
         if(flag){
@@ -154,9 +154,7 @@ public class MainController {
                     break;
     
                 default:
-                    jdbc.update("UPDATE schedule "
-                            + "SET checktime = ?"
-                            + "WHERE id = ?", time, id);
+                    scheduleDao.checkUpdate(time, id);
             }
         }
     }
@@ -214,9 +212,9 @@ public class MainController {
     public void printComment(LocalDate day, Model model){
         String textcomm = "";
         
-        List<Map<String, Object>>text_comment = commentDao.findCommentDay(day);
+        List<Comment>text_comment = commentDao.findCommentDay(day);
         if(text_comment.size() != 0){
-            textcomm = (text_comment.get(0)).get("text").toString();
+            textcomm = (text_comment.get(0)).getText().toString();
         }
         model.addAttribute("comm",textcomm);
         
@@ -224,11 +222,11 @@ public class MainController {
 
     // コメントの追加
     public void addComment(LocalDate day, String text){
-        List<Map<String, Object>> comm_daySQL = commentDao.findComment();
+        List<Comment> comm_daySQL = commentDao.findComment();
         
         int k = 0;
         for (int i = 0; i < comm_daySQL.size(); i++){
-            LocalDate date = LocalDate.parse((comm_daySQL.get(i)).get("day").toString());
+            LocalDate date = LocalDate.parse((comm_daySQL.get(i)).getDay().toString());
             if (date.equals(day)) {
                 k = 1;
                 break;
