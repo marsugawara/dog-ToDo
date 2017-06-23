@@ -167,13 +167,13 @@ public class MainController {
         schedules.addAll(scheduleDao.findScheduleByDogTypeAndDay(DogType.of(dogType), date, Title.BREAKFAST, Title.DINNER));
         
         for (Schedule schedule : schedules) {
-            if ((schedule).getChecktime() == null) {
+            if (schedule.getChecktime() == null) {
                 checktime = "";
             } else {
                 //時分秒のみ表示する
                 checktime = "(" + schedule.getChecktime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")) + ")";
             }
-            goods.add(new Goods((schedule).getTitle().toString(), checktime, (schedule).getId()));
+            goods.add(new Goods(schedule.getTitle().toString(), checktime, schedule.getId()));
         }
 
         return goods;
@@ -200,7 +200,7 @@ public class MainController {
         
         List<Comment>text_comment = commentDao.findCommentDay(day);
         if(text_comment.size() != 0){
-            textcomm = (text_comment.get(0)).getText().toString();
+            textcomm = text_comment.get(0).getText().toString();
         }
         model.addAttribute("comm",textcomm);
         
@@ -212,7 +212,7 @@ public class MainController {
         
         int k = 0;
         for (int i = 0; i < comm_daySQL.size(); i++){
-            LocalDate date = LocalDate.parse((comm_daySQL.get(i)).getDay().toString());
+            LocalDate date = LocalDate.parse(comm_daySQL.get(i).getDay().toString());
             if (date.equals(day)) {
                 k = 1;
                 break;
