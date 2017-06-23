@@ -82,10 +82,8 @@ public class MainController {
 
     @PostMapping("/rokuPlus:{date}") // ろくた追加ボタン
     public String rokuplus(@PathVariable("date") String date, String item, RedirectAttributes attr) {
-        LocalDate day = LocalDate.now();
-        if(date.equals(null) == false && date.equals("") == false){
-            day = LocalDate.parse(date);
-        }
+        LocalDate day = LocalDate.parse(date);
+
         addDay(0, item, day);
         attr.addFlashAttribute(item);
         
@@ -94,10 +92,8 @@ public class MainController {
 
     @PostMapping("/nanaPlus:{date}") // ななこ追加ボタン
     public String nanaplus(@PathVariable("date") String date, String item, RedirectAttributes attr) {
-        LocalDate day = LocalDate.now();
-        if(date.equals(null) == false && date.equals("") == false){
-            day = LocalDate.parse(date);
-        }
+        LocalDate day = LocalDate.parse(date);
+
         addDay(1, item, day);
         attr.addFlashAttribute(item);
         
@@ -190,10 +186,7 @@ public class MainController {
 
     @PostMapping("/comment/{date}") // コメント書込ボタン
     public String sample(CommentForm form, @PathVariable("date") String date, RedirectAttributes attr) {
-        LocalDate day = LocalDate.now();
-        if(date.equals(null) == false && date.equals("") == false){
-            day = LocalDate.parse(date);
-        }
+        LocalDate day = LocalDate.parse(date);
 
         addComment(day, form.getComm());
         attr.addFlashAttribute(form.getComm());
