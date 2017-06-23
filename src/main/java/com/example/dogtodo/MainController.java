@@ -32,14 +32,14 @@ public class MainController {
     private CommentDao commentDao;
 
     // 処理の中身
-    @GetMapping("/indent") // 全体の初期ページ
+    @GetMapping("/dogtodo") // 全体の初期ページ
     public String hello(String date, Goods goods, Model model) {
         LocalDate localDate = LocalDate.now();
 
-        return "redirect:/indent/" + localDate;
+        return "redirect:/dogtodo/" + localDate;
     }
     
-    @GetMapping("/indent/{date}")
+    @GetMapping("/dogtodo/{date}")
     public String helloworld(@PathVariable("date") String date, Model model){
         if (date == null || date.equals("")){ 
             model.addAttribute("rokutaGohans", getGoods(0, LocalDate.now()));
@@ -52,7 +52,7 @@ public class MainController {
         }
         printComment(LocalDate.parse(date), model);
 
-        return "indent";
+        return "dogtodo";
     }
 
     @PostMapping("/yesterday")
@@ -60,7 +60,7 @@ public class MainController {
         LocalDate day = LocalDate.now().minusDays(1);
 
         attr.addFlashAttribute("date", day);
-        return "redirect:/indent/" + day;
+        return "redirect:/dogtodo/" + day;
     }
 
     @PostMapping("/today")
@@ -68,7 +68,7 @@ public class MainController {
         LocalDate day = LocalDate.now();
 
         attr.addFlashAttribute("date", day);
-        return "redirect:/indent/" + day;
+        return "redirect:/dogtodo/" + day;
     }
 
     @PostMapping("/tomorrow")
@@ -76,7 +76,7 @@ public class MainController {
         LocalDate day = LocalDate.now().plusDays(1);
 
         attr.addFlashAttribute("date", day);
-        return "redirect:/indent/" + day;
+        return "redirect:/dogtodo/" + day;
     }
 
     @PostMapping("/calendar")
@@ -84,7 +84,7 @@ public class MainController {
         LocalDate day = LocalDate.parse(num01);
 
         attr.addFlashAttribute("date", day);
-        return "redirect:/indent/" + day;
+        return "redirect:/dogtodo/" + day;
     }
 
     @PostMapping("/rokuPlus:{date}") // ろくた追加ボタン
@@ -96,7 +96,7 @@ public class MainController {
         addDay(0, item, day);
         attr.addFlashAttribute(item);
         
-        return "redirect:/indent/" + day;
+        return "redirect:/dogtodo/" + day;
     }
 
     @PostMapping("/nanaPlus:{date}") // ななこ追加ボタン
@@ -108,7 +108,7 @@ public class MainController {
         addDay(1, item, day);
         attr.addFlashAttribute(item);
         
-        return "redirect:/indent/" + day;
+        return "redirect:/dogtodo/" + day;
     }
 
     @PostMapping("/ro_afterCheck:{date}")// ろくたチェック後
@@ -118,7 +118,7 @@ public class MainController {
             addChecktime(date, time, rokuClick[i]);
         }
 
-        return "redirect:/indent/" + date;
+        return "redirect:/dogtodo/" + date;
     }
 
     @PostMapping("/na_afterCheck:{date}")// ななこチェック後
@@ -128,7 +128,7 @@ public class MainController {
             addChecktime(date, time, nanaClick[i]);
         }
 
-        return "redirect:/indent/" + date;
+        return "redirect:/dogtodo/" + date;
     }
 
     // チックされた時間の追加
@@ -205,7 +205,7 @@ public class MainController {
         addComment(day, form.getComm());
         attr.addFlashAttribute(form.getComm());
 
-        return "redirect:/indent/" + day;
+        return "redirect:/dogtodo/" + day;
     }
 
     //コメント表示
