@@ -234,6 +234,8 @@ public class MainController {
             case 1:
                 commentDao.commUpdate(text, day);
                 break;
+            default:
+                return;
         }
     }
 
