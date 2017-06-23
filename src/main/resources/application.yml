@@ -8,6 +8,8 @@ spring:
     url: jdbc:h2:C:\dog-ToDo\db\dog-ToDo;MODE=PostgreSQL
     username: sa
     password: 
+    sql-script-encoding: UTF-8
     
 server:
   port: 8082
+  
